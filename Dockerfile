@@ -1,25 +1,38 @@
-# Use imagem leve com Node.js 18
+# Use Node.js 18 Alpine as base image
 FROM node:18-alpine
 
-# Diretório de trabalho
+# Set working directory
 WORKDIR /app
 
-# Copia arquivos de dependência
+# Copy package files
 COPY package*.json ./
 
-# Instala apenas dependências de produção
+# Install dependencies
 RUN npm ci --only=production
 
-# Copia somente o código já compilado
-COPY dist ./dist
-COPY healthcheck.js ./
+# Copy source code
+COPY . .
 
-# Expõe a porta
+# Build the application
+RUN npm run build
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S greenncovery -u 1001
+
+# Change ownership of the app directory
+RUN chown -R greenncovery:nodejs /app
+USER greenncovery
+
+# Expose port
 EXPOSE 3000
 
-# Healthcheck opcional
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD node healthcheck.js || exit 1
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node healthcheck.js
 
-# Inicia app
-CMD ["npm", "start"]
+# Start the application
+CMD ["npm", "start"] 

@@ -46,7 +46,7 @@
     --border: #cdd8cd;
     --input: #669966;
     --ring: #2c5232;
-    --radius: 0.3rem;
+    --radius: 0.6rem;
   }
   .dark {
     --background: #1a1f1a;
@@ -68,7 +68,7 @@
     --border: #669966;
     --input: #669966;
     --ring: #2c5232;
-    --radius: 0.3rem;
+    --radius: 0.6rem;
   }
 }
 

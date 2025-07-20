@@ -6,6 +6,7 @@ import {
   PhWhatsappLogo,
   PhQrCode,
   PhArrowClockwise,
+  PhSignOut,
 } from "@phosphor-icons/vue";
 import { useRevolutionStore } from "@/store";
 import { useAuthStore } from "@/store";
@@ -32,6 +33,16 @@ const checkSessionStatus = async () => {
     await revolutionStore.checkStatus();
   } catch (error) {
     console.error("Erro ao verificar status da sessão:", error);
+  }
+};
+
+const disconnectSession = async () => {
+  try {
+    await revolutionStore.disconnectSession();
+    // Verificar status da sessão após desconectar
+    await checkSessionStatus();
+  } catch (error) {
+    console.error("Erro ao desconectar sessão:", error);
   }
 };
 
@@ -126,9 +137,20 @@ onMounted(async () => {
           <h3 class="text-lg font-semibold text-green-700 mb-2">
             WhatsApp Conectado!
           </h3>
-          <p class="text-sm text-gray-600">
+          <p class="text-sm text-gray-600 mb-6">
             Sua sessão está ativa e pronta para uso
           </p>
+
+          <!-- Botão Desconectar -->
+          <Button
+            v-if="sessionState"
+            variant="outline"
+            @click="disconnectSession"
+            class="flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+          >
+            <PhSignOut :size="16" />
+            Desconectar WhatsApp
+          </Button>
         </div>
 
         <!-- QR Code para Conectar -->

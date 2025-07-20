@@ -10,6 +10,7 @@ import {
   PhChatCircle,
   PhClock,
   PhPaperPlaneRight,
+  PhArrowClockwise,
 } from "@phosphor-icons/vue";
 import { useRevolutionStore } from "@/store";
 
@@ -28,6 +29,17 @@ const messages = computed(() => revolutionStore.messages);
 
 const goBack = () => {
   router.push({ name: "AbandonedCart" });
+};
+
+const reloadMessages = async () => {
+  try {
+    loading.value = true;
+    await revolutionStore.getMessagesApi(clientCellphone);
+  } catch (error) {
+    console.error("Erro ao recarregar mensagens:", error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const sendMessage = async () => {
@@ -206,6 +218,17 @@ onMounted(async () => {
           </p>
         </div>
       </div>
+
+      <!-- Botão de Recarregar -->
+      <Button
+        variant="outline"
+        @click="reloadMessages"
+        :disabled="loading"
+        class="flex items-center gap-2"
+      >
+        <PhArrowClockwise :size="16" :class="{ 'animate-spin': loading }" />
+        Recarregar
+      </Button>
     </div>
 
     <!-- Histórico de Mensagens -->
@@ -276,6 +299,7 @@ onMounted(async () => {
       <CardContent class="pt-6">
         <div class="flex gap-3">
           <Textarea
+            :disabled="!messages.length"
             v-model="newMessage"
             placeholder="Digite sua mensagem..."
             class="flex-1 min-h-[80px] resize-none"

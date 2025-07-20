@@ -236,10 +236,20 @@ export const useRevolutionStore = defineStore("revolution", {
         return null;
       }
     },
-
     // Função helper para verificar se a sessão está conectada
     isSessionConnected(statusData: SessionStatusResponse): boolean {
       return statusData.success && statusData.state === "CONNECTED";
+    },
+    async disconnectSession() {
+      try {
+        const sessionId = await this.getSessionId();
+        await ApiServiceRevolution?.get(
+          revolution.routes.disconnectSession(sessionId)
+        );
+        this.sessionState = false;
+      } catch (error) {
+        console.error("Erro ao desconectar sessão:", error);
+      }
     },
     async getMessagesApi(clientCellphone: string): Promise<MessagesResponse[]> {
       const sessionId = await this.getSessionId();
@@ -261,6 +271,7 @@ export const useRevolutionStore = defineStore("revolution", {
 
         return [];
       } catch (error) {
+        this.messages = [];
         console.error("Erro ao obter mensagens:", error);
         return [];
       }

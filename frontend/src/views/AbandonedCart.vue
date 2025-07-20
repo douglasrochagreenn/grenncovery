@@ -7,6 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Table,
   TableBody,
   TableCaption,
@@ -24,11 +32,20 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination/index";
-import { useAbandonedCartStore } from "@/store";
-import { PhMagnifyingGlass, PhX, PhChatCircle } from "@phosphor-icons/vue";
+import { useAbandonedCartStore, useRevolutionStore } from "@/store";
+import {
+  PhMagnifyingGlass,
+  PhX,
+  PhChatCircle,
+  PhWarning,
+} from "@phosphor-icons/vue";
 
 const router = useRouter();
 const abandonedCartStore = useAbandonedCartStore();
+const revolutionStore = useRevolutionStore();
+
+// Dialog state
+const showWhatsAppDialog = ref(false);
 
 // Filtros
 const emailFilter = ref("");
@@ -69,6 +86,13 @@ const handlePageChange = async (page: number | string) => {
 };
 
 const navigateToMessageHistory = (cartId: string, clientCellphone: string) => {
+  // Verificar se o WhatsApp está conectado
+  if (!revolutionStore.sessionState) {
+    showWhatsAppDialog.value = true;
+    return;
+  }
+
+  // Se estiver conectado, navegar normalmente
   router.push({
     name: "MessageHistory",
     params: {
@@ -76,6 +100,15 @@ const navigateToMessageHistory = (cartId: string, clientCellphone: string) => {
       client_cellphone: clientCellphone,
     },
   });
+};
+
+const goToWhatsAppConfig = () => {
+  showWhatsAppDialog.value = false;
+  router.push({ name: "WhatsAppConfig" });
+};
+
+const closeDialog = () => {
+  showWhatsAppDialog.value = false;
 };
 
 // Gerar array de páginas para exibição
@@ -305,6 +338,39 @@ onMounted(async () => {
         </div>
       </CardContent>
     </Card>
+
+    <!-- Dialog de Aviso WhatsApp -->
+    <Dialog
+      :open="showWhatsAppDialog"
+      @update:open="showWhatsAppDialog = $event"
+    >
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle class="flex items-center gap-2">
+            <div class="p-2 bg-yellow-100 rounded-lg">
+              <PhWarning class="w-5 h-5 text-yellow-600" />
+            </div>
+            WhatsApp Não Conectado
+          </DialogTitle>
+          <DialogDescription class="text-left">
+            Para acessar o histórico de mensagens, você precisa estar conectado
+            ao WhatsApp.
+            <br /><br />
+            Clique em "Configurar WhatsApp" para conectar sua conta e poder
+            visualizar e enviar mensagens.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter class="flex gap-2">
+          <Button variant="outline" @click="closeDialog"> Fechar </Button>
+          <Button
+            @click="goToWhatsAppConfig"
+            class="bg-green-600 hover:bg-green-700"
+          >
+            Configurar WhatsApp
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 

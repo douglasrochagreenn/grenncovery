@@ -1,4 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc';
+import path from 'path';
 
 const options = {
   definition: {
@@ -343,11 +344,17 @@ const options = {
       }
     ]
   },
-  apis: [
-    './src/routes/*.ts',
-    './src/controllers/*.ts',
-    './src/models/*.ts'
-  ]
+  apis: process.env.NODE_ENV === 'production' 
+    ? [
+        path.join(__dirname, '../routes/*.js'),
+        path.join(__dirname, '../controllers/*.js'),
+        path.join(__dirname, '../models/*.js')
+      ]
+    : [
+        './src/routes/*.ts',
+        './src/controllers/*.ts', 
+        './src/models/*.ts'
+      ]
 };
 
 export const swaggerDefinition = swaggerJsdoc(options);

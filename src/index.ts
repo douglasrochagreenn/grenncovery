@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
+import path from 'path';
 
 import { connectDB } from './config/database';
 import { logger } from './config/logger';
@@ -53,7 +54,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDefinition, {
   customfavIcon: '/favicon.ico',
   swaggerOptions: {
     persistAuthorization: true,
-    displayRequestDuration: true
+    displayRequestDuration: true,
+    docExpansion: 'list',
+    defaultModelsExpandDepth: 1,
+    defaultModelExpandDepth: 1
   }
 }));
 

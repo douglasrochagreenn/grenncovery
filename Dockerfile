@@ -1,38 +1,27 @@
-# Use Node.js 18 Alpine as base image
+# Imagem base leve com Node.js 18
 FROM node:18-alpine
 
-# Set working directory
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Copy package files
+# Copia os arquivos de dependência
 COPY package*.json ./
 
-# Install dependencies
+# Instala apenas dependências de produção
 RUN npm ci --only=production
 
-# Copy source code
+# Copia o restante da aplicação
 COPY . .
 
-# Build the application
+# Compila o projeto TypeScript
 RUN npm run build
 
-# Create logs directory
-RUN mkdir -p logs
-
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nathan -u 1001
-
-# Change ownership of the app directory
-RUN chown -R nathan:nodejs /app
-USER nathan
-
-# Expose port
+# Expõe a porta da aplicação
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
+# Healthcheck simples (ajuste se não usar healthcheck.js)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD node healthcheck.js || exit 1
 
-# Start the application
-CMD ["npm", "start"] 
+# Inicia a aplicação
+CMD ["npm", "start"]

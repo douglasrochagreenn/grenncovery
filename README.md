@@ -1,6 +1,6 @@
-# Nathan Webhook API
+# GreennCovery Webhook API
 
-Backend em Node.js com TypeScript para receber webhooks de carrinho abandonado e gerenciar dados de clientes, vendas e produtos.
+Backend GreennCovery em Node.js com TypeScript para receber webhooks de carrinho abandonado e gerenciar dados de clientes, vendas e produtos.
 
 ## 🚀 Funcionalidades
 
@@ -23,7 +23,7 @@ Backend em Node.js com TypeScript para receber webhooks de carrinho abandonado e
 1. **Clone o repositório**
 ```bash
 git clone <repository-url>
-cd nathan
+cd greenncovery
 ```
 
 2. **Instale as dependências**
@@ -38,14 +38,14 @@ cp env.example .env
 
 Edite o arquivo `.env` com suas configurações:
 ```env
-# Server Configuration
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/greenncovery-db?retryWrites=true&w=majority
 PORT=3000
 NODE_ENV=development
 
 # MongoDB Atlas Configuration
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/nathan-db?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/greenncovery-db?retryWrites=true&w=majority
 
-# JWT Secret (for future authentication)
+MONGODB_URI=your-mongodb-atlas-uri  
 JWT_SECRET=your-super-secret-jwt-key
 
 # Logging
@@ -261,4 +261,4 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## 🆘 Suporte
 
-Para suporte, envie um email para support@nathan.com ou abra uma issue no repositório. 
+Para suporte, envie um email para support@greenncovery.com ou abra uma issue no repositório.

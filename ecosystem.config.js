@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'nathan-webhook-api',
+      name: 'greenncovery-webhook-api',
       script: 'dist/index.js',
       instances: 'max',
       exec_mode: 'cluster',

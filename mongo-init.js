@@ -1,7 +1,7 @@
 // Script de inicialização do MongoDB
 // Cria a database e configurações iniciais
 
-db = db.getSiblingDB('nathan-db');
+db = db.getSiblingDB('greenncovery-db');
 
 // Criar coleção de carrinhos abandonados
 db.createCollection('abandoned_carts');
@@ -16,15 +16,15 @@ db.abandoned_carts.createIndex({ "sale.status": 1 });
 
 // Criar usuário admin (opcional)
 db.createUser({
-  user: "nathan_admin",
-  pwd: "nathan_password_123",
+  user: "greenncovery_admin",
+  pwd: "greenncovery_password_123",
   roles: [
-    { role: "readWrite", db: "nathan-db" },
-    { role: "dbAdmin", db: "nathan-db" }
+    { role: "readWrite", db: "greenncovery-db" },
+    { role: "dbAdmin", db: "greenncovery-db" }
   ]
 });
 
-print("✅ Database 'nathan-db' inicializada com sucesso!");
+print("✅ Database 'greenncovery-db' inicializada com sucesso!");
 print("📊 Coleção 'abandoned_carts' criada");
 print("🔍 Índices criados para otimização");
-print("👤 Usuário admin criado: nathan_admin"); 
+print("👤 Usuário admin criado: greenncovery_admin");

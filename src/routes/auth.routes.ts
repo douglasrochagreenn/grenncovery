@@ -329,9 +329,74 @@ const router = Router();
  *         description: Erro interno do servidor
  */
 
+/**
+ * @swagger
+ * /auth/verify-token:
+ *   post:
+ *     summary: Verifica validade do token JWT
+ *     description: |
+ *       Verifica se um token JWT é válido e retorna informações sobre ele.
+ *       
+ *       **Funcionalidades:**
+ *       - Valida token JWT
+ *       - Retorna data de expiração
+ *       - Informa se está próximo do vencimento
+ *       - Retorna dados do usuário
+ *     tags: [Autenticação]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token verificado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Token válido"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     valid:
+ *                       type: boolean
+ *                       example: true
+ *                     expiresAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2025-02-19T19:09:10.312Z"
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         userId:
+ *                           type: string
+ *                           example: "64f8a1b2c3d4e5f6a7b8c9d0"
+ *                         email:
+ *                           type: string
+ *                           example: "usuario@exemplo.com"
+ *                         role:
+ *                           type: string
+ *                           example: "user"
+ *                     expiringSoon:
+ *                       type: boolean
+ *                       example: false
+ *                       description: "True se o token expira em menos de 7 dias"
+ *       400:
+ *         description: Token não fornecido
+ *       401:
+ *         description: Token inválido ou expirado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
 // Rotas de autenticação
 router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
+router.post('/verify-token', AuthController.verifyToken);
 router.get('/profile', AuthMiddleware.authenticate, AuthController.getProfile);
 
 export default router; 

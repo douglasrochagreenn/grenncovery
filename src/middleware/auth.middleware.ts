@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../models/user.model';
+import { JwtService } from '../config/jwt';
 import { IAuthRequest } from '../types/auth.types';
 import { logger } from '../config/logger';
 
@@ -20,10 +21,19 @@ export class AuthMiddleware {
         return;
       }
 
-      const token = authHeader.substring(7);
+      const token = JwtService.extractTokenFromHeader(authHeader);
       
-      // Verificar token (implementação temporária)
-      const decoded = this.verifyToken(token);
+      if (!token) {
+        res.status(401).json({
+          success: false,
+          error: 'Token malformado',
+          message: 'Formato do token inválido'
+        });
+        return;
+      }
+
+      // Verificar token JWT
+      const decoded = JwtService.verifyToken(token);
       
       // Buscar usuário no banco
       const user = await User.findById(decoded.userId).select('-password');
@@ -110,29 +120,5 @@ export class AuthMiddleware {
 
       next();
     };
-  }
-
-  /**
-   * Verificação temporária de token (será substituída pelo JwtService)
-   */
-  private static verifyToken(token: string): { userId: string; email: string; role: string } {
-    // Implementação temporária - será substituída pelo JwtService
-    try {
-      // Decodificar base64 para simular verificação
-      const decoded = Buffer.from(token, 'base64').toString('utf-8');
-      const parts = decoded.split(':');
-      
-      if (parts.length !== 3) {
-        throw new Error('Token inválido');
-      }
-
-      return {
-        userId: parts[0],
-        email: parts[1],
-        role: parts[2]
-      };
-    } catch (error) {
-      throw new Error('Token inválido');
-    }
   }
 } 

@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { IJwtPayload } from '../types/auth.types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'nathan-webhook-secret-key-2024-super-secure';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_SECRET = process.env.JWT_SECRET || 'greenncovery-jwt-secret-key-2024-super-secure-token';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '30d';
 
 export class JwtService {
   /**
@@ -44,5 +44,42 @@ export class JwtService {
       return null;
     }
     return authHeader.substring(7);
+  }
+
+  /**
+   * Verifica se o token está próximo do vencimento (últimos 7 dias)
+   */
+  static isTokenExpiringSoon(token: string): boolean {
+    try {
+      const decoded = this.decodeToken(token);
+      if (!decoded || !decoded.exp) return true;
+      
+      const now = Math.floor(Date.now() / 1000);
+      const sevenDaysInSeconds = 7 * 24 * 60 * 60;
+      
+      return (decoded.exp - now) < sevenDaysInSeconds;
+    } catch (error) {
+      return true;
+    }
+  }
+
+  /**
+   * Obtém informações do token
+   */
+  static getTokenInfo(token: string): { valid: boolean; expiresAt?: Date; user?: any } {
+    try {
+      const decoded = this.verifyToken(token);
+      return {
+        valid: true,
+        expiresAt: new Date(decoded.exp * 1000),
+        user: {
+          userId: decoded.userId,
+          email: decoded.email,
+          role: decoded.role
+        }
+      };
+    } catch (error) {
+      return { valid: false };
+    }
   }
 } 

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { User } from '../models/user.model';
 import { logger } from '../config/logger';
+import { JwtService } from '../config/jwt';
 import { ILoginRequest, IRegisterRequest, ILoginResponse, IRegisterResponse } from '../types/auth.types';
 
 export class AuthController {
@@ -79,8 +80,12 @@ export class AuthController {
 
       await user.save();
 
-      // Gerar token (implementação temporária)
-      const token = AuthController.generateTemporaryToken(user._id.toString(), user.email, user.role);
+      // Gerar token JWT válido
+      const token = JwtService.generateToken({
+        userId: user._id.toString(),
+        email: user.email,
+        role: user.role
+      });
 
       // Atualizar último login
       await user.updateLastLogin();
@@ -100,7 +105,7 @@ export class AuthController {
             updatedAt: user.updatedAt
           },
           token,
-          expiresIn: '7d'
+          expiresIn: '30d'
         }
       };
 
@@ -169,8 +174,12 @@ export class AuthController {
         return;
       }
 
-      // Gerar token (implementação temporária)
-      const token = AuthController.generateTemporaryToken(user._id.toString(), user.email, user.role);
+      // Gerar token JWT válido
+      const token = JwtService.generateToken({
+        userId: user._id.toString(),
+        email: user.email,
+        role: user.role
+      });
 
       // Atualizar último login
       await user.updateLastLogin();
@@ -190,7 +199,7 @@ export class AuthController {
             updatedAt: user.updatedAt
           },
           token,
-          expiresIn: '7d'
+          expiresIn: '30d'
         }
       };
 
@@ -252,10 +261,51 @@ export class AuthController {
   }
 
   /**
-   * Gera token temporário (será substituído pelo JwtService)
+   * Verifica informações do token
    */
-  private static generateTemporaryToken(userId: string, email: string, role: string): string {
-    const payload = `${userId}:${email}:${role}`;
-    return Buffer.from(payload).toString('base64');
+  static async verifyToken(req: Request, res: Response): Promise<void> {
+    try {
+      const authHeader = req.headers.authorization;
+      const token = JwtService.extractTokenFromHeader(authHeader);
+      
+      if (!token) {
+        res.status(400).json({
+          success: false,
+          error: 'Token não fornecido',
+          message: 'É necessário fornecer um token Bearer'
+        });
+        return;
+      }
+
+      const tokenInfo = JwtService.getTokenInfo(token);
+      
+      if (!tokenInfo.valid) {
+        res.status(401).json({
+          success: false,
+          error: 'Token inválido',
+          message: 'Token inválido ou expirado'
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Token válido',
+        data: {
+          valid: true,
+          expiresAt: tokenInfo.expiresAt,
+          user: tokenInfo.user,
+          expiringSoon: JwtService.isTokenExpiringSoon(token)
+        }
+      });
+
+    } catch (error) {
+      logger.error('Erro ao verificar token:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Erro interno do servidor',
+        message: 'Erro ao verificar token'
+      });
+    }
   }
 } 

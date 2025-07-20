@@ -1,4 +1,4 @@
-# Guia de Deploy - Nathan Webhook API
+# Guia de Deploy - GreennCovery Webhook API
 
 Este documento contém instruções detalhadas para fazer o deploy da API em diferentes ambientes.
 
@@ -13,7 +13,7 @@ Este documento contém instruções detalhadas para fazer o deploy da API em dif
 1. **Clone e instale**
 ```bash
 git clone <repository-url>
-cd nathan
+cd greenncovery
 npm install
 ```
 
@@ -35,7 +35,7 @@ npm run dev
 1. **Clone o repositório**
 ```bash
 git clone <repository-url>
-cd nathan
+cd greenncovery
 ```
 
 2. **Execute com Docker Compose**
@@ -52,12 +52,18 @@ docker-compose up -d
 
 1. **Build da imagem**
 ```bash
-npm run docker:build
+docker build -t greenncovery-webhook-api:latest .
 ```
 
 2. **Execute o container**
 ```bash
-npm run docker:run
+docker run -d \
+  --name greenncovery-api \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e MONGODB_URI=your-mongodb-atlas-uri \
+  -e JWT_SECRET=your-secret \
+  greenncovery-webhook-api:latest
 ```
 
 ## ☁️ Deploy em Produção
@@ -116,7 +122,7 @@ docker run -d \
 
 1. **Crie um namespace**
 ```bash
-kubectl create namespace nathan
+kubectl create namespace greenncovery
 ```
 
 2. **Aplique os manifests**
@@ -126,8 +132,8 @@ kubectl apply -f k8s/
 
 3. **Verifique o deploy**
 ```bash
-kubectl get pods -n nathan
-kubectl get services -n nathan
+kubectl get pods -n greenncovery
+kubectl get services -n greenncovery
 ```
 
 ## 🔧 Configuração do MongoDB Atlas
@@ -153,7 +159,7 @@ kubectl get services -n nathan
 
 ### 5. Configurar no .env
 ```env
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/nathan-db?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/greenncovery-db?retryWrites=true&w=majority
 ```
 
 ## 🔒 Configurações de Segurança
@@ -256,5 +262,5 @@ tail -f logs/error.log
 
 Para suporte técnico:
 - Abra uma issue no repositório
-- Envie email para support@nathan.com
+- Envie email para support@greenncovery.com
 - Consulte a documentação da API em `/api-docs` 

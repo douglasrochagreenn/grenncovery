@@ -360,7 +360,7 @@ const router = Router();
 
 /**
  * @swagger
- * /webhook/nathan:
+ * /webhook/greenncovery:
  *   post:
  *     summary: Recebe webhook específico do Nathan
  *     description: |
@@ -377,9 +377,9 @@ const router = Router();
  *       - Informações do cliente (nome, email, telefone, endereço)
  *       - Detalhes da venda (valor, método de pagamento)
  *       - Informações do produto
- *       - Dados do vendedor
- *       - Informações do contrato
- *     tags: [Webhook Nathan]
+ *     summary: Recebe webhook específico do GreennCovery
+ *     description: Endpoint específico para receber webhooks do sistema GreennCovery
+ *     tags: [Webhook GreennCovery]
  *     requestBody:
  *       required: true
  *       content:
@@ -469,13 +469,13 @@ const router = Router();
  *             schema:
  *               oneOf:
  *                 - $ref: '#/components/schemas/NathanWebhookResponse'
- *                 - $ref: '#/components/schemas/DuplicateResponse'
+ *               $ref: '#/components/schemas/GreennCoveryWebhookResponse'
  *             examples:
  *               success:
  *                 summary: Webhook processado com sucesso
  *                 value:
  *                   success: true
- *                   message: "Webhook Nathan processado com sucesso"
+ *                   message: "Webhook GreennCovery processado com sucesso"
  *                   data:
  *                     id: "64f8a1b2c3d4e5f6a7b8c9d0"
  *                     saleId: 526
@@ -599,7 +599,7 @@ const router = Router();
 
 // Webhook routes
 router.post('/abandoned-cart', WebhookController.handleAbandonedCart);
-router.post('/nathan', WebhookController.handleNathanWebhook);
+router.post('/greenncovery', WebhookController.handleGreennCoveryWebhook);
 router.get('/health', WebhookController.healthCheck);
 
 export default router; 

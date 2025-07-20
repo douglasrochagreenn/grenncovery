@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  nathan-api:
+  greenncovery-api:
     build: .
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - MONGODB_URI=mongodb://mongo:27017/nathan-db
+      - MONGODB_URI=mongodb://mongo:27017/greenncovery-db
       - LOG_LEVEL=info
     depends_on:
       - mongo
@@ -17,20 +17,20 @@ services:
       - ./src:/app/src
     restart: unless-stopped
     networks:
-      - nathan-network
+      - greenncovery-network
 
   mongo:
     image: mongo:6.0
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_DATABASE=nathan-db
+      - MONGO_INITDB_DATABASE=greenncovery-db
     volumes:
       - mongo_data:/data/db
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     restart: unless-stopped
     networks:
-      - nathan-network
+      - greenncovery-network
 
   mongo-express:
     image: mongo-express:latest
@@ -47,11 +47,11 @@ services:
       - mongo
     restart: unless-stopped
     networks:
-      - nathan-network
+      - greenncovery-network
 
 volumes:
   mongo_data:
 
 networks:
-  nathan-network:
+  greenncovery-network:
     driver: bridge 

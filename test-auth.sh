@@ -2,11 +2,11 @@
 
 # Script para testar o sistema de autenticação
 
-echo "🔐 Testando sistema de autenticação..."
+echo "🔐 Testando sistema de autenticação - GreennCovery..."
 echo ""
 
 # URL base
-BASE_URL="http://localhost:3001"
+BASE_URL="http://localhost:3000"
 
 # Verificar se o servidor está rodando
 echo "🔍 Verificando se o servidor está rodando..."
@@ -22,8 +22,8 @@ echo "📝 Testando registro de usuário..."
 
 # Dados para registro
 REGISTER_DATA='{
-  "name": "João Silva",
-  "email": "joao.silva@exemplo.com",
+  "name": "João GreennCovery",
+  "email": "joao@greenncovery.com",
   "password": "123456",
   "confirmPassword": "123456"
 }'
@@ -45,7 +45,7 @@ if [ "$TOKEN" = "null" ] || [ -z "$TOKEN" ]; then
     
     # Dados para login
     LOGIN_DATA='{
-      "email": "joao.silva@exemplo.com",
+      "email": "joao@greenncovery.com",
       "password": "123456"
     }'
     
@@ -63,7 +63,16 @@ fi
 
 if [ "$TOKEN" != "null" ] && [ -n "$TOKEN" ]; then
     echo ""
-    echo "🔑 Token obtido: $TOKEN"
+    echo "🔑 Token JWT obtido (válido por 30 dias)"
+    echo "Token: ${TOKEN:0:50}..."
+    echo ""
+    
+    echo "🔍 Verificando validade do token..."
+    TOKEN_VERIFY_RESPONSE=$(curl -s -X POST "$BASE_URL/auth/verify-token" \
+      -H "Authorization: Bearer $TOKEN")
+    
+    echo "📤 Resposta da verificação:"
+    echo "$TOKEN_VERIFY_RESPONSE" | jq '.' 2>/dev/null || echo "$TOKEN_VERIFY_RESPONSE"
     echo ""
     
     echo "👤 Testando obtenção do perfil..."
@@ -96,6 +105,14 @@ if [ "$TOKEN" != "null" ] && [ -n "$TOKEN" ]; then
     echo "📤 Resposta sem token:"
     echo "$NO_TOKEN_RESPONSE" | jq '.' 2>/dev/null || echo "$NO_TOKEN_RESPONSE"
     
+    echo ""
+    echo "📋 INSTRUÇÕES PARA USO NO SWAGGER:"
+    echo "1. Acesse: $BASE_URL/api-docs"
+    echo "2. Clique no botão 'Authorize' (cadeado)"
+    echo "3. Digite: Bearer $TOKEN"
+    echo "4. Clique em 'Authorize' e depois 'Close'"
+    echo "5. Agora você pode testar todas as APIs protegidas!"
+    
 else
     echo ""
     echo "❌ Não foi possível obter token de autenticação"
@@ -104,4 +121,3 @@ fi
 echo ""
 echo "🌐 Acesse a documentação Swagger em: $BASE_URL/api-docs"
 echo ""
-echo "✅ Teste de autenticação concluído!" 

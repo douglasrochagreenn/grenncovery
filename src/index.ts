@@ -45,18 +45,22 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Nathan Webhook API',
+      title: 'GreennCovery Webhook API',
       version: '1.0.0',
-      description: 'API para receber webhooks de carrinho abandonado do sistema Nathan',
+      description: 'API para receber webhooks de carrinho abandonado do sistema GreennCovery',
       contact: {
-        name: 'Nathan Team',
-        email: 'suporte@nathan.com'
+        name: 'GreennCovery',
+        email: 'contato@greenncovery.com'
       }
     },
     servers: [
       {
         url: `http://localhost:${PORT}`,
         description: 'Servidor de Desenvolvimento'
+      },
+      {
+        url: 'https://api.greenncovery.com',
+        description: 'Servidor de Produção'
       }
     ],
     components: {
@@ -65,7 +69,7 @@ const swaggerOptions = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'Token JWT obtido através do login'
+          description: 'Token JWT obtido através do login (válido por 30 dias)'
         }
       }
     }
@@ -83,7 +87,12 @@ app.use('/auth', authRoutes);
 // Documentação Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'Nathan Webhook API - Documentação'
+  customSiteTitle: 'GreennCovery API - Documentação',
+  customfavIcon: '/favicon.ico',
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true
+  }
 }));
 
 // Rota de health check
@@ -91,7 +100,7 @@ app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    service: 'nathan-webhook-api',
+    service: 'greenncovery-api',
     version: '1.0.0'
   });
 });
@@ -99,7 +108,7 @@ app.get('/health', (req, res) => {
 // Rota raiz
 app.get('/', (req, res) => {
   res.json({
-    message: 'Nathan Webhook API',
+    message: 'GreennCovery API',
     version: '1.0.0',
     documentation: `/api-docs`,
     health: `/health`

@@ -216,10 +216,10 @@ export class WebhookController {
 
   /**
    * @swagger
-   * /webhook/nathan:
+   * /webhook/greenncovery:
    *   post:
-   *     summary: Recebe webhook específico do Nathan
-   *     description: Endpoint específico para receber webhooks do sistema Nathan
+   *     summary: Recebe webhook específico do GreennCovery
+   *     description: Endpoint específico para receber webhooks do sistema GreennCovery
    *     tags: [Webhook]
    *     requestBody:
    *       required: true
@@ -274,7 +274,7 @@ export class WebhookController {
    *                   example: true
    *                 message:
    *                   type: string
-   *                   example: Webhook Nathan processado com sucesso
+   *                   example: Webhook GreennCovery processado com sucesso
    *                 data:
    *                   type: object
    *                   properties:
@@ -298,9 +298,9 @@ export class WebhookController {
    *       500:
    *         description: Erro interno do servidor
    */
-  static async handleNathanWebhook(req: Request, res: Response): Promise<void> {
+  static async handleGreennCoveryWebhook(req: Request, res: Response): Promise<void> {
     try {
-      logger.info('📥 Recebendo webhook específico do Nathan');
+      logger.info('📥 Recebendo webhook específico do GreennCovery');
 
       // Log the incoming data for debugging
       logger.info('📋 Dados recebidos:', JSON.stringify(req.body, null, 2));
@@ -351,7 +351,7 @@ export class WebhookController {
       const abandonedCart = new AbandonedCart(webhookData);
       await abandonedCart.save();
 
-      logger.info('✅ Webhook Nathan processado com sucesso', {
+      logger.info('✅ Webhook GreennCovery processado com sucesso', {
         saleId: webhookData.sale.id,
         clientEmail: webhookData.client.email,
         productName: webhookData.product.name,
@@ -361,7 +361,7 @@ export class WebhookController {
       // Return success response
       res.status(200).json({
         success: true,
-        message: 'Webhook Nathan processado com sucesso',
+        message: 'Webhook GreennCovery processado com sucesso',
         data: {
           id: abandonedCart._id,
           saleId: webhookData.sale.id,
@@ -377,11 +377,11 @@ export class WebhookController {
       });
 
     } catch (error) {
-      logger.error('❌ Erro ao processar webhook Nathan:', error);
+      logger.error('❌ Erro ao processar webhook GreennCovery:', error);
       res.status(500).json({
         success: false,
         error: 'Erro interno do servidor',
-        message: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Erro ao processar webhook Nathan'
+        message: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Erro ao processar webhook GreennCovery'
       });
     }
   }
@@ -415,4 +415,4 @@ export class WebhookController {
       service: 'webhook-service'
     });
   }
-} 
+}

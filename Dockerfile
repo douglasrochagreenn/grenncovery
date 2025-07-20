@@ -1,27 +1,25 @@
-# Imagem base leve com Node.js 18
+# Use imagem leve com Node.js 18
 FROM node:18-alpine
 
-# Define o diretório de trabalho
+# Diretório de trabalho
 WORKDIR /app
 
-# Copia os arquivos de dependência
+# Copia arquivos de dependência
 COPY package*.json ./
 
 # Instala apenas dependências de produção
 RUN npm ci --only=production
 
-# Copia o restante da aplicação
-COPY . .
+# Copia somente o código já compilado
+COPY dist ./dist
+COPY healthcheck.js ./
 
-# Compila o projeto TypeScript
-RUN npm run build
-
-# Expõe a porta da aplicação
+# Expõe a porta
 EXPOSE 3000
 
-# Healthcheck simples (ajuste se não usar healthcheck.js)
+# Healthcheck opcional
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD node healthcheck.js || exit 1
 
-# Inicia a aplicação
+# Inicia app
 CMD ["npm", "start"]

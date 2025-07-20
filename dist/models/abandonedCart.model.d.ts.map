@@ -1,0 +1,1 @@
+{"version":3,"file":"abandonedCart.model.d.ts","sourceRoot":"","sources":["../../src/models/abandonedCart.model.ts"],"names":[],"mappings":"AAAA,OAAO,QAAQ,EAAE,EAAE,QAAQ,EAAU,MAAM,UAAU,CAAC;AACtD,OAAO,EAAE,oBAAoB,EAAE,MAAM,wBAAwB,CAAC;AAE9D,MAAM,WAAW,qBAAsB,SAAQ,QAAQ,EAAE,oBAAoB;IAC3E,SAAS,EAAE,IAAI,CAAC;IAChB,SAAS,EAAE,IAAI,CAAC;CACjB;AA4GD,eAAO,MAAM,aAAa;;OAA8E,CAAC"}

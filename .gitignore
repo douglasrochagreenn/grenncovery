@@ -11,7 +11,7 @@ yarn-error.log*
 .env.production.local
 
 # Build output
-dist/
+# dist/
 build/
 
 # Logs

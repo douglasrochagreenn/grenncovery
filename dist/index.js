@@ -67,7 +67,9 @@ const swaggerOptions = {
             }
         }
     },
-    apis: ['./src/routes/*.ts', './src/controllers/*.ts']
+    apis: process.env.NODE_ENV === 'production'
+        ? ['./dist/routes/*.js', './dist/controllers/*.js']
+        : ['./src/routes/*.ts', './src/controllers/*.ts']
 };
 const specs = (0, swagger_jsdoc_1.default)(swaggerOptions);
 app.use('/webhook', webhook_routes_1.default);

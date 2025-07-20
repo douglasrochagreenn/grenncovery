@@ -260,7 +260,7 @@ onMounted(async () => {
               v-else
               v-for="cart in abandonedCartStore.carts"
               :key="cart._id"
-              class="hover:bg-gray-50 transition-colors"
+              class="hover:bg-secondary transition-colors"
             >
               <TableCell class="font-medium">{{ cart.client.name }}</TableCell>
               <TableCell>{{ cart.client.email }}</TableCell>

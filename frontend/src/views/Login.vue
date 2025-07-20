@@ -106,14 +106,14 @@ onMounted(async () => {
               v-if="!showPassword"
               :size="20"
               color="var(--icon)"
-              class="cursor-pointer absolute top-[32px] right-3 select-none"
+              class="cursor-pointer absolute top-[24px] right-3 select-none"
               @click="showPassword = !showPassword"
             />
             <PhEyeSlash
               v-else
               :size="20"
               color="var(--icon)"
-              class="cursor-pointer absolute top-[32px] right-3 select-none"
+              class="cursor-pointer absolute top-[24px] right-3 select-none"
               @click="showPassword = !showPassword"
             />
           </FormControl>

@@ -11,7 +11,7 @@ onMounted(() => {
 <template>
   <main
     data-anima="top"
-    class="h-dvh grid grid-cols-[635px_1fr] md:grid-cols-[1fr] overflow-hidden lg:grid-cols-[282px_1fr] xl:grid-cols-[475px_1fr] md:overflow-scroll"
+    class="h-dvh grid grid-cols-[1fr_2fr] md:grid-cols-[1fr] overflow-hidden md:overflow-scroll"
   >
     <div class="image relative md:hidden" />
     <div class="container flex flex-col p-28 pb-0 gap-10 md:p-8">
@@ -24,7 +24,7 @@ onMounted(() => {
 
 <style lang="scss">
 .image {
-  background-image: url("../assets/img.login.svg");
+  background-image: url("../assets/GREENNCOVERY.LOGIN.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;

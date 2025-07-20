@@ -826,6 +826,405 @@ export declare const swaggerDefinition: {
                 };
             };
         };
+        '/auth/register': {
+            post: {
+                summary: string;
+                description: string;
+                tags: string[];
+                requestBody: {
+                    required: boolean;
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: string;
+                                required: string[];
+                                properties: {
+                                    name: {
+                                        type: string;
+                                        example: string;
+                                        minLength: number;
+                                        maxLength: number;
+                                    };
+                                    email: {
+                                        type: string;
+                                        format: string;
+                                        example: string;
+                                    };
+                                    password: {
+                                        type: string;
+                                        example: string;
+                                        minLength: number;
+                                    };
+                                    confirmPassword: {
+                                        type: string;
+                                        example: string;
+                                        minLength: number;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+                responses: {
+                    201: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            type: string;
+                                            properties: {
+                                                user: {
+                                                    type: string;
+                                                    properties: {
+                                                        _id: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        name: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        email: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        role: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        isActive: {
+                                                            type: string;
+                                                            example: boolean;
+                                                        };
+                                                    };
+                                                };
+                                                token: {
+                                                    type: string;
+                                                    example: string;
+                                                };
+                                                expiresIn: {
+                                                    type: string;
+                                                    example: string;
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    400: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: string;
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        '/auth/profile': {
+            get: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            type: string;
+                                            properties: {
+                                                user: {
+                                                    type: string;
+                                                    properties: {
+                                                        _id: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        name: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        email: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        role: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        isActive: {
+                                                            type: string;
+                                                            example: boolean;
+                                                        };
+                                                        lastLogin: {
+                                                            type: string;
+                                                            format: string;
+                                                        };
+                                                        createdAt: {
+                                                            type: string;
+                                                            format: string;
+                                                        };
+                                                        updatedAt: {
+                                                            type: string;
+                                                            format: string;
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    401: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: string;
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        '/auth/verify-token': {
+            post: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            type: string;
+                                            properties: {
+                                                valid: {
+                                                    type: string;
+                                                    example: boolean;
+                                                };
+                                                expiresAt: {
+                                                    type: string;
+                                                    format: string;
+                                                };
+                                                user: {
+                                                    type: string;
+                                                    properties: {
+                                                        userId: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        email: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                        role: {
+                                                            type: string;
+                                                            example: string;
+                                                        };
+                                                    };
+                                                };
+                                                expiringSoon: {
+                                                    type: string;
+                                                    example: boolean;
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    401: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: string;
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        '/api/abandoned-carts/{id}': {
+            get: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                parameters: {
+                    in: string;
+                    name: string;
+                    required: boolean;
+                    schema: {
+                        type: string;
+                    };
+                    description: string;
+                }[];
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            $ref: string;
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    404: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: string;
+                                };
+                            };
+                        };
+                    };
+                    401: {
+                        description: string;
+                    };
+                };
+            };
+        };
+        '/api/abandoned-carts/stats/daily': {
+            get: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                parameters: {
+                    in: string;
+                    name: string;
+                    schema: {
+                        type: string;
+                        minimum: number;
+                        maximum: number;
+                        default: number;
+                    };
+                    description: string;
+                }[];
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            type: string;
+                                            items: {
+                                                type: string;
+                                                properties: {
+                                                    date: {
+                                                        type: string;
+                                                        format: string;
+                                                        example: string;
+                                                    };
+                                                    count: {
+                                                        type: string;
+                                                        example: number;
+                                                    };
+                                                    totalValue: {
+                                                        type: string;
+                                                        example: number;
+                                                    };
+                                                    averageValue: {
+                                                        type: string;
+                                                        example: number;
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    401: {
+                        description: string;
+                    };
+                };
+            };
+        };
         '/health': {
             get: {
                 summary: string;

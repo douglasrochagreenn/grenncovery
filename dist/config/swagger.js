@@ -525,6 +525,261 @@ exports.swaggerDefinition = {
                 }
             }
         },
+        '/auth/register': {
+            post: {
+                summary: 'Registra um novo usuário',
+                description: 'Cria uma nova conta de usuário no sistema',
+                tags: ['Autenticação'],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                required: ['name', 'email', 'password', 'confirmPassword'],
+                                properties: {
+                                    name: { type: 'string', example: 'João Silva', minLength: 2, maxLength: 100 },
+                                    email: { type: 'string', format: 'email', example: 'joao.silva@exemplo.com' },
+                                    password: { type: 'string', example: '123456', minLength: 6 },
+                                    confirmPassword: { type: 'string', example: '123456', minLength: 6 }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    201: {
+                        description: 'Usuário registrado com sucesso',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        success: { type: 'boolean', example: true },
+                                        message: { type: 'string', example: 'Usuário registrado com sucesso' },
+                                        data: {
+                                            type: 'object',
+                                            properties: {
+                                                user: {
+                                                    type: 'object',
+                                                    properties: {
+                                                        _id: { type: 'string', example: '64f8a1b2c3d4e5f6a7b8c9d0' },
+                                                        name: { type: 'string', example: 'João Silva' },
+                                                        email: { type: 'string', example: 'joao.silva@exemplo.com' },
+                                                        role: { type: 'string', example: 'user' },
+                                                        isActive: { type: 'boolean', example: true }
+                                                    }
+                                                },
+                                                token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+                                                expiresIn: { type: 'string', example: '30d' }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    400: {
+                        description: 'Dados inválidos ou email já cadastrado',
+                        content: {
+                            'application/json': {
+                                schema: { $ref: '#/components/schemas/ErrorResponse' }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        '/auth/profile': {
+            get: {
+                summary: 'Obtém perfil do usuário logado',
+                description: 'Retorna as informações do usuário autenticado',
+                tags: ['Autenticação'],
+                security: [{ bearerAuth: [] }],
+                responses: {
+                    200: {
+                        description: 'Perfil obtido com sucesso',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        success: { type: 'boolean', example: true },
+                                        message: { type: 'string', example: 'Perfil obtido com sucesso' },
+                                        data: {
+                                            type: 'object',
+                                            properties: {
+                                                user: {
+                                                    type: 'object',
+                                                    properties: {
+                                                        _id: { type: 'string', example: '64f8a1b2c3d4e5f6a7b8c9d0' },
+                                                        name: { type: 'string', example: 'João Silva' },
+                                                        email: { type: 'string', example: 'joao.silva@exemplo.com' },
+                                                        role: { type: 'string', example: 'user' },
+                                                        isActive: { type: 'boolean', example: true },
+                                                        lastLogin: { type: 'string', format: 'date-time' },
+                                                        createdAt: { type: 'string', format: 'date-time' },
+                                                        updatedAt: { type: 'string', format: 'date-time' }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    401: {
+                        description: 'Não autenticado',
+                        content: {
+                            'application/json': {
+                                schema: { $ref: '#/components/schemas/ErrorResponse' }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        '/auth/verify-token': {
+            post: {
+                summary: 'Verifica validade do token JWT',
+                description: 'Verifica se um token JWT é válido e retorna informações sobre ele',
+                tags: ['Autenticação'],
+                security: [{ bearerAuth: [] }],
+                responses: {
+                    200: {
+                        description: 'Token verificado com sucesso',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        success: { type: 'boolean', example: true },
+                                        message: { type: 'string', example: 'Token válido' },
+                                        data: {
+                                            type: 'object',
+                                            properties: {
+                                                valid: { type: 'boolean', example: true },
+                                                expiresAt: { type: 'string', format: 'date-time' },
+                                                user: {
+                                                    type: 'object',
+                                                    properties: {
+                                                        userId: { type: 'string', example: '64f8a1b2c3d4e5f6a7b8c9d0' },
+                                                        email: { type: 'string', example: 'usuario@exemplo.com' },
+                                                        role: { type: 'string', example: 'user' }
+                                                    }
+                                                },
+                                                expiringSoon: { type: 'boolean', example: false }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    401: {
+                        description: 'Token inválido ou expirado',
+                        content: {
+                            'application/json': {
+                                schema: { $ref: '#/components/schemas/ErrorResponse' }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        '/api/abandoned-carts/{id}': {
+            get: {
+                summary: 'Obtém detalhes de um carrinho abandonado',
+                description: 'Retorna os detalhes completos de um carrinho abandonado específico',
+                tags: ['API - Carrinhos Abandonados'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        in: 'path',
+                        name: 'id',
+                        required: true,
+                        schema: { type: 'string' },
+                        description: 'ID do carrinho abandonado'
+                    }
+                ],
+                responses: {
+                    200: {
+                        description: 'Detalhes do carrinho abandonado',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        success: { type: 'boolean', example: true },
+                                        message: { type: 'string', example: 'Carrinho abandonado encontrado' },
+                                        data: { $ref: '#/components/schemas/AbandonedCart' }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    404: {
+                        description: 'Carrinho não encontrado',
+                        content: {
+                            'application/json': {
+                                schema: { $ref: '#/components/schemas/ErrorResponse' }
+                            }
+                        }
+                    },
+                    401: {
+                        description: 'Não autenticado'
+                    }
+                }
+            }
+        },
+        '/api/abandoned-carts/stats/daily': {
+            get: {
+                summary: 'Estatísticas diárias dos carrinhos abandonados',
+                description: 'Retorna estatísticas diárias dos carrinhos abandonados dos últimos dias',
+                tags: ['API - Estatísticas'],
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        in: 'query',
+                        name: 'days',
+                        schema: { type: 'integer', minimum: 1, maximum: 90, default: 30 },
+                        description: 'Número de dias para analisar'
+                    }
+                ],
+                responses: {
+                    200: {
+                        description: 'Estatísticas diárias obtidas com sucesso',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        success: { type: 'boolean', example: true },
+                                        message: { type: 'string', example: 'Estatísticas diárias obtidas com sucesso' },
+                                        data: {
+                                            type: 'array',
+                                            items: {
+                                                type: 'object',
+                                                properties: {
+                                                    date: { type: 'string', format: 'date', example: '2025-01-19' },
+                                                    count: { type: 'integer', example: 15 },
+                                                    totalValue: { type: 'number', example: 1500.00 },
+                                                    averageValue: { type: 'number', example: 100.00 }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    401: {
+                        description: 'Não autenticado'
+                    }
+                }
+            }
+        },
         '/health': {
             get: {
                 summary: 'Health check geral',

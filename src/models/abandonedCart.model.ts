@@ -4,6 +4,9 @@ import { AbandonedCartWebhook } from '../types/webhook.types';
 export interface AbandonedCartDocument extends Document, AbandonedCartWebhook {
   createdAt: Date;
   updatedAt: Date;
+  cart_status?: string;
+  status_updated_at?: Date;
+  status_updated_by?: string;
 }
 
 const ContractSchema = new Schema({
@@ -98,7 +101,21 @@ const AbandonedCartSchema = new Schema({
   seller: { type: SellerSchema, default: () => ({}) },
   affiliate: { type: Schema.Types.Mixed, default: null },
   productMetas: { type: [Schema.Types.Mixed], default: [] },
-  proposalMetas: { type: [Schema.Types.Mixed], default: [] }
+  proposalMetas: { type: [Schema.Types.Mixed], default: [] },
+  cart_status: { 
+    type: String, 
+    enum: ['abandoned', 'recovered', 'cancelled'], 
+    default: 'abandoned',
+    index: true
+  },
+  status_updated_at: { 
+    type: Date, 
+    default: Date.now 
+  },
+  status_updated_by: { 
+    type: String, 
+    default: 'system' 
+  }
 }, {
   timestamps: true,
   collection: 'abandoned_carts'
@@ -111,5 +128,15 @@ AbandonedCartSchema.index({ 'product.id': 1 });
 AbandonedCartSchema.index({ 'client.email': 1 });
 AbandonedCartSchema.index({ createdAt: -1 });
 AbandonedCartSchema.index({ 'sale.status': 1 });
+AbandonedCartSchema.index({ cart_status: 1 });
+AbandonedCartSchema.index({ status_updated_at: -1 });
+
+// Middleware para atualizar status_updated_at quando cart_status muda
+AbandonedCartSchema.pre('save', function(next) {
+  if (this.isModified('cart_status')) {
+    this.status_updated_at = new Date();
+  }
+  next();
+});
 
 export const AbandonedCart = mongoose.model<AbandonedCartDocument>('AbandonedCart', AbandonedCartSchema); 

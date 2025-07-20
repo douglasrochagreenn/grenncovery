@@ -318,6 +318,20 @@ const router = Router();
  *               type: string
  *               description: Email do vendedor
  *               example: "larry.batz@hotmail.com"
+ *                 cart_status:
+ *                   type: string
+ *                   enum: [abandoned, recovered, cancelled]
+ *                   example: "abandoned"
+ *                   description: Status atual do carrinho
+ *                 status_updated_at:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2025-01-20T10:30:00.000Z"
+ *                   description: Data da última atualização de status
+ *                 status_updated_by:
+ *                   type: string
+ *                   example: "system"
+ *                   description: Usuário que atualizou o status
  *     ErrorResponse:
  *       type: object
  *       properties:
@@ -488,9 +502,171 @@ const router = Router();
  *                   example: webhook-service
  */
 
+/**
+ * @swagger
+ * /webhook/abandoned-cart/{id}/status:
+ *   patch:
+ *     summary: Atualizar status do carrinho via webhook
+ *     description: |
+ *       Endpoint para atualizar o status de um carrinho abandonado via webhook.
+ *       
+ *       **Funcionalidades:**
+ *       - Atualiza status do carrinho (abandoned, recovered, cancelled)
+ *       - Registra data e hora da atualização
+ *       - Registra origem da atualização (webhook)
+ *       - Mantém histórico do status anterior
+ *       - Logs detalhados para auditoria
+ *       
+ *       **Status disponíveis:**
+ *       - `abandoned`: Carrinho abandonado (padrão)
+ *       - `recovered`: Carrinho recuperado (cliente finalizou a compra)
+ *       - `cancelled`: Carrinho cancelado (cliente desistiu definitivamente)
+ *       
+ *       **Casos de uso:**
+ *       - Sistema externo notifica recuperação de carrinho
+ *       - Integração com gateway de pagamento
+ *       - Automação de marketing recupera carrinho
+ *       - Sistema de CRM marca carrinho como cancelado
+ *     tags: [Webhook]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do carrinho abandonado
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - cart_status
+ *             properties:
+ *               cart_status:
+ *                 type: string
+ *                 enum: [abandoned, recovered, cancelled]
+ *                 example: "recovered"
+ *                 description: Novo status do carrinho
+ *               status_updated_by:
+ *                 type: string
+ *                 example: "payment_gateway"
+ *                 description: Sistema que está atualizando o status (opcional, padrão é 'webhook')
+ *           examples:
+ *             payment_recovered:
+ *               summary: Pagamento processado com sucesso
+ *               value:
+ *                 cart_status: "recovered"
+ *                 status_updated_by: "payment_gateway"
+ *             marketing_cancelled:
+ *               summary: Cliente optou por não receber mais emails
+ *               value:
+ *                 cart_status: "cancelled"
+ *                 status_updated_by: "email_marketing"
+ *             system_abandoned:
+ *               summary: Sistema detectou abandono definitivo
+ *               value:
+ *                 cart_status: "abandoned"
+ *                 status_updated_by: "abandonment_detector"
+ *     responses:
+ *       200:
+ *         description: Status atualizado com sucesso via webhook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Status do carrinho atualizado com sucesso via webhook"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "64f8a1b2c3d4e5f6a7b8c9d0"
+ *                     saleId:
+ *                       type: number
+ *                       example: 526
+ *                     clientEmail:
+ *                       type: string
+ *                       example: "cliente@exemplo.com"
+ *                     productName:
+ *                       type: string
+ *                       example: "Curso de JavaScript"
+ *                     cart_status:
+ *                       type: string
+ *                       enum: [abandoned, recovered, cancelled]
+ *                       example: "recovered"
+ *                     status_updated_at:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2025-01-20T10:30:00.000Z"
+ *                     status_updated_by:
+ *                       type: string
+ *                       example: "payment_gateway"
+ *                     previousStatus:
+ *                       type: string
+ *                       example: "abandoned"
+ *                       description: Status anterior do carrinho
+ *       400:
+ *         description: Status inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Status inválido"
+ *                 message:
+ *                   type: string
+ *                   example: "Status deve ser um dos seguintes: abandoned, recovered, cancelled"
+ *       404:
+ *         description: Carrinho não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Carrinho abandonado não encontrado"
+ *                 message:
+ *                   type: string
+ *                   example: "O carrinho abandonado com o ID especificado não foi encontrado"
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Erro interno do servidor"
+ *                 message:
+ *                   type: string
+ *                   example: "Erro ao atualizar status do carrinho via webhook"
+ */
+
 // Webhook routes
 router.post('/abandoned-cart', WebhookController.handleAbandonedCart);
 router.post('/greenncovery', WebhookController.handleGreennCoveryWebhook);
+router.patch('/abandoned-cart/:id/status', WebhookController.updateCartStatus);
 router.get('/health', WebhookController.healthCheck);
 
 export default router; 

@@ -13,6 +13,7 @@ router.get('/abandoned-carts', abandonedCart_controller_1.AbandonedCartControlle
 router.get('/abandoned-carts/:id', abandonedCart_controller_1.AbandonedCartController.getAbandonedCartById);
 router.get('/abandoned-carts/stats/overview', abandonedCart_controller_1.AbandonedCartController.getStatsOverview);
 router.get('/abandoned-carts/stats/daily', abandonedCart_controller_1.AbandonedCartController.getDailyStats);
+router.patch('/abandoned-carts/:id/status', abandonedCart_controller_1.AbandonedCartController.updateCartStatus);
 router.use('/questions-answers', questionAnswer_routes_1.default);
 exports.default = router;
 //# sourceMappingURL=api.routes.js.map

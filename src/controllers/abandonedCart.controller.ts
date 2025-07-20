@@ -45,6 +45,10 @@ export class AbandonedCartController {
         filter['sale.total'] = { ...filter['sale.total'], $lte: parseFloat(req.query.maxAmount as string) };
       }
 
+      if (req.query.cart_status) {
+        filter.cart_status = req.query.cart_status;
+      }
+
       // Build sort object
       const sortBy = req.query.sortBy as string || 'createdAt';
       const sortOrder = req.query.sortOrder as string === 'asc' ? 1 : -1;
@@ -262,4 +266,69 @@ export class AbandonedCartController {
       });
     }
   }
-} 
+
+  /**
+   * Update cart status
+   */
+  static async updateCartStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { cart_status, status_updated_by } = req.body;
+
+      // Validar status
+      const validStatuses = ['abandoned', 'recovered', 'cancelled'];
+      if (!cart_status || !validStatuses.includes(cart_status)) {
+        res.status(400).json({
+          success: false,
+          error: 'Status inválido',
+          message: `Status deve ser um dos seguintes: ${validStatuses.join(', ')}`
+        });
+        return;
+      }
+
+      // Buscar carrinho abandonado
+      const abandonedCart = await AbandonedCart.findById(id);
+
+      if (!abandonedCart) {
+        res.status(404).json({
+          success: false,
+          error: 'Carrinho abandonado não encontrado',
+          message: 'O carrinho abandonado com o ID especificado não foi encontrado'
+        });
+        return;
+      }
+
+      // Atualizar status
+      abandonedCart.cart_status = cart_status;
+      abandonedCart.status_updated_at = new Date();
+      abandonedCart.status_updated_by = status_updated_by || 'system';
+
+      await abandonedCart.save();
+
+      logger.info(`✅ Status do carrinho atualizado: ${id} -> ${cart_status}`);
+
+      res.status(200).json({
+        success: true,
+        message: 'Status do carrinho atualizado com sucesso',
+        data: {
+          id: abandonedCart._id,
+          saleId: abandonedCart.sale.id,
+          clientEmail: abandonedCart.client.email,
+          productName: abandonedCart.product.name,
+          cart_status: abandonedCart.cart_status,
+          status_updated_at: abandonedCart.status_updated_at,
+          status_updated_by: abandonedCart.status_updated_by,
+          previousStatus: cart_status !== abandonedCart.cart_status ? abandonedCart.cart_status : undefined
+        }
+      });
+
+    } catch (error) {
+      logger.error('❌ Erro ao atualizar status do carrinho:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Erro interno do servidor',
+        message: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Erro ao atualizar status do carrinho'
+      });
+    }
+  }
+}

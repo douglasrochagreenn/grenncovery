@@ -34,6 +34,9 @@ class AbandonedCartController {
             if (req.query.maxAmount) {
                 filter['sale.total'] = { ...filter['sale.total'], $lte: parseFloat(req.query.maxAmount) };
             }
+            if (req.query.cart_status) {
+                filter.cart_status = req.query.cart_status;
+            }
             const sortBy = req.query.sortBy || 'createdAt';
             const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
             const sort = {};
@@ -209,6 +212,57 @@ class AbandonedCartController {
                 success: false,
                 error: 'Erro interno do servidor',
                 message: process.env.NODE_ENV === 'development' ? error.message : 'Erro ao gerar estatísticas diárias'
+            });
+        }
+    }
+    static async updateCartStatus(req, res) {
+        try {
+            const { id } = req.params;
+            const { cart_status, status_updated_by } = req.body;
+            const validStatuses = ['abandoned', 'recovered', 'cancelled'];
+            if (!cart_status || !validStatuses.includes(cart_status)) {
+                res.status(400).json({
+                    success: false,
+                    error: 'Status inválido',
+                    message: `Status deve ser um dos seguintes: ${validStatuses.join(', ')}`
+                });
+                return;
+            }
+            const abandonedCart = await abandonedCart_model_1.AbandonedCart.findById(id);
+            if (!abandonedCart) {
+                res.status(404).json({
+                    success: false,
+                    error: 'Carrinho abandonado não encontrado',
+                    message: 'O carrinho abandonado com o ID especificado não foi encontrado'
+                });
+                return;
+            }
+            abandonedCart.cart_status = cart_status;
+            abandonedCart.status_updated_at = new Date();
+            abandonedCart.status_updated_by = status_updated_by || 'system';
+            await abandonedCart.save();
+            logger_1.logger.info(`✅ Status do carrinho atualizado: ${id} -> ${cart_status}`);
+            res.status(200).json({
+                success: true,
+                message: 'Status do carrinho atualizado com sucesso',
+                data: {
+                    id: abandonedCart._id,
+                    saleId: abandonedCart.sale.id,
+                    clientEmail: abandonedCart.client.email,
+                    productName: abandonedCart.product.name,
+                    cart_status: abandonedCart.cart_status,
+                    status_updated_at: abandonedCart.status_updated_at,
+                    status_updated_by: abandonedCart.status_updated_by,
+                    previousStatus: cart_status !== abandonedCart.cart_status ? abandonedCart.cart_status : undefined
+                }
+            });
+        }
+        catch (error) {
+            logger_1.logger.error('❌ Erro ao atualizar status do carrinho:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Erro interno do servidor',
+                message: process.env.NODE_ENV === 'development' ? error.message : 'Erro ao atualizar status do carrinho'
             });
         }
     }

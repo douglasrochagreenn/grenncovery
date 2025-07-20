@@ -421,4 +421,73 @@ export class WebhookController {
       service: 'webhook-service'
     });
   }
+
+  /**
+   * Update cart status via webhook
+   */
+  static async updateCartStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { cart_status, status_updated_by } = req.body;
+
+      logger.info(`📥 Recebendo atualização de status via webhook: ${id} -> ${cart_status}`);
+
+      // Validar status
+      const validStatuses = ['abandoned', 'recovered', 'cancelled'];
+      if (!cart_status || !validStatuses.includes(cart_status)) {
+        res.status(400).json({
+          success: false,
+          error: 'Status inválido',
+          message: `Status deve ser um dos seguintes: ${validStatuses.join(', ')}`
+        });
+        return;
+      }
+
+      // Buscar carrinho abandonado
+      const abandonedCart = await AbandonedCart.findById(id);
+
+      if (!abandonedCart) {
+        res.status(404).json({
+          success: false,
+          error: 'Carrinho abandonado não encontrado',
+          message: 'O carrinho abandonado com o ID especificado não foi encontrado'
+        });
+        return;
+      }
+
+      const previousStatus = abandonedCart.cart_status;
+
+      // Atualizar status
+      abandonedCart.cart_status = cart_status;
+      abandonedCart.status_updated_at = new Date();
+      abandonedCart.status_updated_by = status_updated_by || 'webhook';
+
+      await abandonedCart.save();
+
+      logger.info(`✅ Status do carrinho atualizado via webhook: ${id} (${previousStatus} -> ${cart_status})`);
+
+      res.status(200).json({
+        success: true,
+        message: 'Status do carrinho atualizado com sucesso via webhook',
+        data: {
+          id: abandonedCart._id,
+          saleId: abandonedCart.sale.id,
+          clientEmail: abandonedCart.client.email,
+          productName: abandonedCart.product.name,
+          cart_status: abandonedCart.cart_status,
+          status_updated_at: abandonedCart.status_updated_at,
+          status_updated_by: abandonedCart.status_updated_by,
+          previousStatus
+        }
+      });
+
+    } catch (error) {
+      logger.error('❌ Erro ao atualizar status do carrinho via webhook:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Erro interno do servidor',
+        message: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Erro ao atualizar status do carrinho via webhook'
+      });
+    }
+  }
 }

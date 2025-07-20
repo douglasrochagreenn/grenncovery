@@ -99,6 +99,12 @@ const router = Router();
  *           type: number
  *         description: Valor máximo
  *       - in: query
+ *         name: cart_status
+ *         schema:
+ *           type: string
+ *           enum: [abandoned, recovered, cancelled]
+ *         description: Filtrar por status do carrinho
+ *       - in: query
  *         name: sortBy
  *         schema:
  *           type: string
@@ -369,6 +375,144 @@ const router = Router();
  *         description: Erro interno do servidor
  */
 
+/**
+ * @swagger
+ * /api/abandoned-carts/{id}/status:
+ *   patch:
+ *     summary: Atualizar status do carrinho abandonado
+ *     description: |
+ *       Atualiza o status de um carrinho abandonado específico.
+ *       
+ *       **Autenticação:**
+ *       - Requer token JWT válido no header Authorization
+ *       - Formato: `Bearer <token>`
+ *       
+ *       **Status disponíveis:**
+ *       - `abandoned`: Carrinho abandonado (padrão)
+ *       - `recovered`: Carrinho recuperado (cliente finalizou a compra)
+ *       - `cancelled`: Carrinho cancelado (cliente desistiu definitivamente)
+ *       
+ *       **Funcionalidades:**
+ *       - Atualiza o status do carrinho
+ *       - Registra data e hora da atualização
+ *       - Registra quem fez a atualização
+ *       - Mantém histórico do status anterior
+ *     tags: [API - Carrinhos Abandonados]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do carrinho abandonado
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - cart_status
+ *             properties:
+ *               cart_status:
+ *                 type: string
+ *                 enum: [abandoned, recovered, cancelled]
+ *                 example: "recovered"
+ *                 description: Novo status do carrinho
+ *               status_updated_by:
+ *                 type: string
+ *                 example: "admin_user"
+ *                 description: Usuário que está atualizando o status (opcional, padrão é 'system')
+ *           examples:
+ *             recover_cart:
+ *               summary: Marcar carrinho como recuperado
+ *               value:
+ *                 cart_status: "recovered"
+ *                 status_updated_by: "recovery_system"
+ *             cancel_cart:
+ *               summary: Marcar carrinho como cancelado
+ *               value:
+ *                 cart_status: "cancelled"
+ *                 status_updated_by: "admin_user"
+ *             abandon_cart:
+ *               summary: Marcar carrinho como abandonado
+ *               value:
+ *                 cart_status: "abandoned"
+ *                 status_updated_by: "system"
+ *     responses:
+ *       200:
+ *         description: Status atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Status do carrinho atualizado com sucesso"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "64f8a1b2c3d4e5f6a7b8c9d0"
+ *                     saleId:
+ *                       type: number
+ *                       example: 526
+ *                     clientEmail:
+ *                       type: string
+ *                       example: "cliente@exemplo.com"
+ *                     productName:
+ *                       type: string
+ *                       example: "Curso de JavaScript"
+ *                     cart_status:
+ *                       type: string
+ *                       enum: [abandoned, recovered, cancelled]
+ *                       example: "recovered"
+ *                     status_updated_at:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2025-01-20T10:30:00.000Z"
+ *                     status_updated_by:
+ *                       type: string
+ *                       example: "admin_user"
+ *                     previousStatus:
+ *                       type: string
+ *                       example: "abandoned"
+ *                       description: Status anterior (apenas se diferente do atual)
+ *       400:
+ *         description: Status inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               error: "Status inválido"
+ *               message: "Status deve ser um dos seguintes: abandoned, recovered, cancelled"
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Acesso negado
+ *       404:
+ *         description: Carrinho não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               error: "Carrinho abandonado não encontrado"
+ *               message: "O carrinho abandonado com o ID especificado não foi encontrado"
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
 // Aplicar middleware de autenticação em todas as rotas da API
 router.use(AuthMiddleware.authenticate);
 
@@ -377,6 +521,7 @@ router.get('/abandoned-carts', AbandonedCartController.getAbandonedCarts);
 router.get('/abandoned-carts/:id', AbandonedCartController.getAbandonedCartById);
 router.get('/abandoned-carts/stats/overview', AbandonedCartController.getStatsOverview);
 router.get('/abandoned-carts/stats/daily', AbandonedCartController.getDailyStats);
+router.patch('/abandoned-carts/:id/status', AbandonedCartController.updateCartStatus);
 
 // Rotas da API de perguntas e respostas (protegidas)
 router.use('/questions-answers', questionAnswerRoutes);

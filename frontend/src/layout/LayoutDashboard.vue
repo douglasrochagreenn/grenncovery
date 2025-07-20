@@ -92,7 +92,7 @@ onMounted(() => {
       <div class="p-6 flex-1 flex flex-col">
         <h1 class="text-2xl font-bold text-foreground">Grenncovery</h1>
 
-        <nav class="space-y-2 mb-8 flex-1">
+        <nav class="space-y-2 mb-8 mt-8 flex-1">
           <router-link
             v-for="item in navigationItems"
             :key="item.route"

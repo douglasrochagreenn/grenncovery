@@ -89,7 +89,7 @@ export interface AbandonedCartWebhook {
   event: string;
   oldStatus: string;
   currentStatus: string;
-  contract: Contract;
+  contract?: Contract;
   sale: Sale;
   client: Client;
   product: Product;

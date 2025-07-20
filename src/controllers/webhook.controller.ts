@@ -1,94 +1,142 @@
 import { Request, Response } from 'express';
-import Joi from 'joi';
 import { AbandonedCart } from '../models/abandonedCart.model';
 import { logger } from '../config/logger';
-import { AbandonedCartWebhook } from '../types/webhook.types';
-
-// Validation schema for the webhook payload
-const webhookValidationSchema = Joi.object({
-  type: Joi.string().required(),
-  event: Joi.string().required(),
-  oldStatus: Joi.string().required(),
-  currentStatus: Joi.string().required(),
-  contract: Joi.object({
-    id: Joi.number().required(),
-    start_date: Joi.string().required(),
-    created_at: Joi.string().required(),
-    updated_at: Joi.string().required(),
-    status: Joi.string().required(),
-    current_period_end: Joi.string().required()
-  }).required(),
-  sale: Joi.object({
-    id: Joi.number().required(),
-    type: Joi.string().required(),
-    status: Joi.string().required(),
-    created_at: Joi.string().required(),
-    update_at: Joi.string().required(),
-    seller_id: Joi.number().required(),
-    installments: Joi.number().required(),
-    method: Joi.string().required(),
-    client_id: Joi.number().required(),
-    amount: Joi.number().required(),
-    proposal_id: Joi.number().allow(null),
-    total: Joi.number().required()
-  }).required(),
-  client: Joi.object({
-    id: Joi.number().required(),
-    name: Joi.string().required(),
-    email: Joi.string().email().required(),
-    cellphone: Joi.string().required(),
-    document: Joi.string().required(),
-    cpf_cnpj: Joi.string().required(),
-    zipcode: Joi.string().required(),
-    street: Joi.string().required(),
-    number: Joi.string().required(),
-    complement: Joi.string().allow(''),
-    neighborhood: Joi.string().allow(''),
-    city: Joi.string().required(),
-    uf: Joi.string().required(),
-    created_at: Joi.string().required(),
-    updated_at: Joi.string().required()
-  }).required(),
-  product: Joi.object({
-    id: Joi.number().required(),
-    name: Joi.string().required(),
-    description: Joi.string().required(),
-    category_id: Joi.number().required(),
-    stock: Joi.number().allow(null),
-    type: Joi.string().required(),
-    amount: Joi.number().required(),
-    period: Joi.number().required(),
-    thank_you_page: Joi.string().allow(null),
-    created_at: Joi.string().required(),
-    updated_at: Joi.string().required(),
-    seller_id: Joi.number().required(),
-    slug: Joi.string().required(),
-    method: Joi.string().required(),
-    product_type_id: Joi.number().required(),
-    status_changed_at: Joi.string().required(),
-    product_id: Joi.number().required(),
-    hash: Joi.string().required()
-  }).required(),
-  oferta: Joi.string().required(),
-  offer: Joi.object({
-    hash: Joi.string().required(),
-    amount: Joi.number().required(),
-    method: Joi.string().required(),
-    name: Joi.string().required(),
-    created_at: Joi.string().required()
-  }).required(),
-  seller: Joi.object({
-    id: Joi.number().required(),
-    name: Joi.string().required(),
-    email: Joi.string().email().required(),
-    cellphone: Joi.string().required()
-  }).required(),
-  affiliate: Joi.any().allow(null),
-  productMetas: Joi.array().items(Joi.any()),
-  proposalMetas: Joi.array().items(Joi.any())
-});
 
 export class WebhookController {
+  /**
+   * Extrai dados do webhook de forma flexível
+   */
+  private static extractWebhookData(data: any) {
+    // Função auxiliar para buscar valor em diferentes caminhos
+    const getValue = (obj: any, paths: string[]): any => {
+      for (const path of paths) {
+        const keys = path.split('.');
+        let value = obj;
+        
+        for (const key of keys) {
+          if (value && typeof value === 'object' && key in value) {
+            value = value[key];
+          } else {
+            value = undefined;
+            break;
+          }
+        }
+        
+        if (value !== undefined && value !== null) {
+          return value;
+        }
+      }
+      return null;
+    };
+
+    // Extrair dados básicos do evento
+    const type = getValue(data, ['type', 'eventType', 'webhook_type']) || 'checkout';
+    const event = getValue(data, ['event', 'eventName', 'webhook_event']) || 'checkoutAbandoned';
+    const oldStatus = getValue(data, ['oldStatus', 'old_status', 'previousStatus']) || 'abandoned';
+    const currentStatus = getValue(data, ['currentStatus', 'current_status', 'status']) || 'abandoned';
+
+    // Extrair dados do contrato
+    const contract = {
+      id: getValue(data, ['contract.id', 'contract_id', 'subscription.id']) ?? 0,
+      start_date: getValue(data, ['contract.start_date', 'contract.startDate', 'subscription.start_date']) ?? new Date().toISOString().split('T')[0],
+      created_at: getValue(data, ['contract.created_at', 'contract.createdAt', 'subscription.created_at']) ?? new Date().toISOString(),
+      updated_at: getValue(data, ['contract.updated_at', 'contract.updatedAt', 'subscription.updated_at']) ?? new Date().toISOString(),
+      status: getValue(data, ['contract.status', 'subscription.status']) ?? 'unknown',
+      current_period_end: getValue(data, ['contract.current_period_end', 'contract.currentPeriodEnd', 'subscription.current_period_end']) ?? new Date().toISOString()
+    };
+
+    // Extrair dados da venda
+    const sale = {
+      id: getValue(data, ['sale.id', 'order.id', 'transaction.id', 'purchase.id']) ?? Math.floor(Math.random() * 1000000),
+      type: getValue(data, ['sale.type', 'order.type', 'transaction.type']) ?? 'PURCHASE',
+      status: getValue(data, ['sale.status', 'order.status', 'transaction.status']) ?? 'abandoned',
+      created_at: getValue(data, ['sale.created_at', 'sale.createdAt', 'order.created_at', 'transaction.created_at']) ?? new Date().toISOString(),
+      update_at: getValue(data, ['sale.update_at', 'sale.updated_at', 'sale.updatedAt', 'order.updated_at']) ?? new Date().toISOString(),
+      seller_id: getValue(data, ['sale.seller_id', 'sale.sellerId', 'seller.id', 'vendor.id']) ?? 0,
+      installments: getValue(data, ['sale.installments', 'payment.installments']) ?? 1,
+      method: getValue(data, ['sale.method', 'payment.method', 'payment_method']) ?? 'UNKNOWN',
+      client_id: getValue(data, ['sale.client_id', 'sale.clientId', 'customer.id', 'client.id']) ?? 0,
+      amount: getValue(data, ['sale.amount', 'sale.value', 'order.amount', 'transaction.amount']) ?? 0,
+      proposal_id: getValue(data, ['sale.proposal_id', 'sale.proposalId', 'proposal.id']),
+      total: getValue(data, ['sale.total', 'sale.amount', 'order.total', 'transaction.total']) ?? 0
+    };
+
+    // Extrair dados do cliente
+    const client = {
+      id: getValue(data, ['client.id', 'customer.id', 'user.id']) ?? 0,
+      name: getValue(data, ['client.name', 'customer.name', 'user.name', 'customer.full_name']) ?? 'Cliente Desconhecido',
+      email: getValue(data, ['client.email', 'customer.email', 'user.email']) ?? 'cliente@exemplo.com',
+      cellphone: getValue(data, ['client.cellphone', 'client.phone', 'customer.phone', 'user.phone']) ?? '',
+      document: getValue(data, ['client.document', 'customer.document', 'user.document', 'client.cpf']) ?? '',
+      cpf_cnpj: getValue(data, ['client.cpf_cnpj', 'client.cpf', 'customer.cpf', 'user.cpf']) ?? '',
+      zipcode: getValue(data, ['client.zipcode', 'client.zip', 'customer.zipcode', 'address.zipcode']) ?? '',
+      street: getValue(data, ['client.street', 'customer.street', 'address.street']) ?? '',
+      number: getValue(data, ['client.number', 'customer.number', 'address.number']) ?? '',
+      complement: getValue(data, ['client.complement', 'customer.complement', 'address.complement']) ?? '',
+      neighborhood: getValue(data, ['client.neighborhood', 'customer.neighborhood', 'address.neighborhood']) ?? '',
+      city: getValue(data, ['client.city', 'customer.city', 'address.city']) ?? '',
+      uf: getValue(data, ['client.uf', 'client.state', 'customer.state', 'address.state']) ?? '',
+      created_at: getValue(data, ['client.created_at', 'client.createdAt', 'customer.created_at']) ?? new Date().toISOString(),
+      updated_at: getValue(data, ['client.updated_at', 'client.updatedAt', 'customer.updated_at']) ?? new Date().toISOString()
+    };
+
+    // Extrair dados do produto
+    const product = {
+      id: getValue(data, ['product.id', 'item.id', 'offer.product_id']) ?? 0,
+      name: getValue(data, ['product.name', 'item.name', 'offer.name', 'product.title']) ?? 'Produto Desconhecido',
+      description: getValue(data, ['product.description', 'item.description', 'offer.description']) ?? '',
+      category_id: getValue(data, ['product.category_id', 'product.categoryId', 'item.category_id']) ?? 0,
+      stock: getValue(data, ['product.stock', 'item.stock', 'inventory.quantity']),
+      type: getValue(data, ['product.type', 'item.type', 'offer.type']) ?? 'PRODUCT',
+      amount: getValue(data, ['product.amount', 'product.price', 'item.price', 'offer.price']) ?? 0,
+      period: getValue(data, ['product.period', 'subscription.period', 'billing.period']) ?? 30,
+      thank_you_page: getValue(data, ['product.thank_you_page', 'product.thankYouPage']),
+      created_at: getValue(data, ['product.created_at', 'product.createdAt', 'item.created_at']) ?? new Date().toISOString(),
+      updated_at: getValue(data, ['product.updated_at', 'product.updatedAt', 'item.updated_at']) ?? new Date().toISOString(),
+      seller_id: getValue(data, ['product.seller_id', 'product.sellerId', 'vendor.id']) ?? 0,
+      slug: getValue(data, ['product.slug', 'item.slug']) ?? '',
+      method: getValue(data, ['product.method', 'payment.methods', 'accepted_methods']) ?? 'UNKNOWN',
+      product_type_id: getValue(data, ['product.product_type_id', 'product.typeId']) ?? 0,
+      status_changed_at: getValue(data, ['product.status_changed_at', 'product.statusChangedAt']) ?? new Date().toISOString(),
+      product_id: getValue(data, ['product.product_id', 'product.id']) ?? 0,
+      hash: getValue(data, ['product.hash', 'offer.hash', 'item.hash']) ?? ''
+    };
+
+    // Extrair dados da oferta
+    const offer = {
+      hash: getValue(data, ['offer.hash', 'product.hash', 'item.hash']) ?? '',
+      amount: getValue(data, ['offer.amount', 'offer.price', 'product.amount']) ?? 0,
+      method: getValue(data, ['offer.method', 'offer.payment_methods', 'product.method']) ?? 'UNKNOWN',
+      name: getValue(data, ['offer.name', 'product.name', 'item.name']) ?? 'Oferta Desconhecida',
+      created_at: getValue(data, ['offer.created_at', 'offer.createdAt', 'product.created_at']) ?? new Date().toISOString()
+    };
+
+    // Extrair dados do vendedor
+    const seller = {
+      id: getValue(data, ['seller.id', 'vendor.id', 'merchant.id']) ?? 0,
+      name: getValue(data, ['seller.name', 'vendor.name', 'merchant.name']) ?? 'Vendedor Desconhecido',
+      email: getValue(data, ['seller.email', 'vendor.email', 'merchant.email']) ?? 'vendedor@exemplo.com',
+      cellphone: getValue(data, ['seller.cellphone', 'seller.phone', 'vendor.phone']) ?? ''
+    };
+
+    return {
+      type: type ?? 'checkout',
+      event: event ?? 'checkoutAbandoned',
+      oldStatus: oldStatus ?? 'abandoned',
+      currentStatus: currentStatus ?? 'abandoned',
+      contract,
+      sale,
+      client,
+      product,
+      oferta: product.name ?? 'Produto Desconhecido',
+      offer,
+      seller,
+      affiliate: getValue(data, ['affiliate', 'referrer']) ?? null,
+      productMetas: getValue(data, ['productMetas', 'product_metas', 'product.metadata']) ?? [],
+      proposalMetas: getValue(data, ['proposalMetas', 'proposal_metas', 'proposal.metadata']) ?? []
+    };
+  }
+
   /**
    * @swagger
    * /webhook/abandoned-cart:
@@ -101,7 +149,8 @@ export class WebhookController {
    *       content:
    *         application/json:
    *           schema:
-   *             $ref: '#/components/schemas/AbandonedCartWebhook'
+   *             type: object
+   *             description: Aceita qualquer estrutura de dados JSON
    *     responses:
    *       200:
    *         description: Webhook processado com sucesso
@@ -117,20 +166,9 @@ export class WebhookController {
    *                   type: string
    *                   example: Webhook processado com sucesso
    *                 data:
-   *                   $ref: '#/components/schemas/AbandonedCartWebhook'
+   *                   type: object
    *       400:
    *         description: Dados inválidos
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 success:
-   *                   type: boolean
-   *                   example: false
-   *                 error:
-   *                   type: string
-   *                   example: Dados inválidos
    *       500:
    *         description: Erro interno do servidor
    */
@@ -138,32 +176,42 @@ export class WebhookController {
     try {
       logger.info('📥 Recebendo webhook de carrinho abandonado');
 
-      // Validate the request body
-      const { error, value } = webhookValidationSchema.validate(req.body);
-      
-      if (error) {
-        logger.error('❌ Erro de validação:', error.details);
+      // Log dos dados recebidos para debug
+      logger.info('📋 Dados brutos recebidos:', JSON.stringify(req.body, null, 2));
+
+      if (!req.body || typeof req.body !== 'object') {
+        logger.error('❌ Dados inválidos: body vazio ou não é objeto');
         res.status(400).json({
           success: false,
           error: 'Dados inválidos',
-          details: error.details.map((detail: any) => detail.message)
+          message: 'O corpo da requisição deve ser um objeto JSON válido'
         });
         return;
       }
 
-      const webhookData: AbandonedCartWebhook = value;
+      // Extrair dados de forma flexível
+      const webhookData = WebhookController.extractWebhookData(req.body);
 
-      // Check if this is an abandoned cart event
-      if (webhookData.event !== 'checkoutAbandoned') {
+      logger.info('📊 Dados extraídos:', {
+        event: webhookData.event,
+        saleId: webhookData.sale.id,
+        clientEmail: webhookData.client.email,
+        productName: webhookData.product.name
+      });
+
+      // Verificar se é um evento de carrinho abandonado
+      const abandonedEvents = ['checkoutAbandoned', 'cart_abandoned', 'abandoned_cart', 'checkout_abandoned'];
+      if (!abandonedEvents.includes(webhookData.event)) {
         logger.warn('⚠️ Evento não é de carrinho abandonado:', webhookData.event);
         res.status(200).json({
           success: true,
-          message: 'Evento ignorado - não é carrinho abandonado'
+          message: 'Evento ignorado - não é carrinho abandonado',
+          event: webhookData.event
         });
         return;
       }
 
-      // Check if this sale was already processed
+      // Verificar se esta venda já foi processada
       const existingRecord = await AbandonedCart.findOne({ 'sale.id': webhookData.sale.id });
       
       if (existingRecord) {
@@ -171,12 +219,17 @@ export class WebhookController {
         res.status(200).json({
           success: true,
           message: 'Venda já processada anteriormente',
-          data: existingRecord
+          data: {
+            id: existingRecord._id,
+            saleId: webhookData.sale.id,
+            clientEmail: webhookData.client.email,
+            productName: webhookData.product.name
+          }
         });
         return;
       }
 
-      // Save to database
+      // Salvar no banco de dados
       const abandonedCart = new AbandonedCart(webhookData);
       await abandonedCart.save();
 
@@ -185,12 +238,6 @@ export class WebhookController {
         clientEmail: webhookData.client.email,
         productName: webhookData.product.name
       });
-
-      // Here you could add additional logic like:
-      // - Send email to customer
-      // - Create follow-up task
-      // - Send notification to sales team
-      // - Trigger marketing automation
 
       res.status(200).json({
         success: true,
@@ -220,47 +267,14 @@ export class WebhookController {
    *   post:
    *     summary: Recebe webhook específico do GreennCovery
    *     description: Endpoint específico para receber webhooks do sistema GreennCovery
-   *     tags: [Webhook]
+   *     tags: [Webhook GreennCovery]
    *     requestBody:
    *       required: true
    *       content:
    *         application/json:
    *           schema:
    *             type: object
-   *             properties:
-   *               type:
-   *                 type: string
-   *                 example: "checkout"
-   *               event:
-   *                 type: string
-   *                 example: "checkoutAbandoned"
-   *               oldStatus:
-   *                 type: string
-   *                 example: "abandoned"
-   *               currentStatus:
-   *                 type: string
-   *                 example: "abandoned"
-   *               contract:
-   *                 type: object
-   *               sale:
-   *                 type: object
-   *               client:
-   *                 type: object
-   *               product:
-   *                 type: object
-   *               oferta:
-   *                 type: string
-   *               offer:
-   *                 type: object
-   *               seller:
-   *                 type: object
-   *               affiliate:
-   *                 type: object
-   *                 nullable: true
-   *               productMetas:
-   *                 type: array
-   *               proposalMetas:
-   *                 type: array
+   *             description: Aceita qualquer estrutura de dados JSON
    *     responses:
    *       200:
    *         description: Webhook processado com sucesso
@@ -277,22 +291,6 @@ export class WebhookController {
    *                   example: Webhook GreennCovery processado com sucesso
    *                 data:
    *                   type: object
-   *                   properties:
-   *                     id:
-   *                       type: string
-   *                       description: ID do registro no banco
-   *                     saleId:
-   *                       type: number
-   *                       description: ID da venda
-   *                     clientEmail:
-   *                       type: string
-   *                       description: Email do cliente
-   *                     productName:
-   *                       type: string
-   *                       description: Nome do produto
-   *                     amount:
-   *                       type: number
-   *                       description: Valor da venda
    *       400:
    *         description: Dados inválidos
    *       500:
@@ -302,24 +300,32 @@ export class WebhookController {
     try {
       logger.info('📥 Recebendo webhook específico do GreennCovery');
 
-      // Log the incoming data for debugging
-      logger.info('📋 Dados recebidos:', JSON.stringify(req.body, null, 2));
+      // Log dos dados recebidos para debug
+      logger.info('📋 Dados brutos recebidos:', JSON.stringify(req.body, null, 2));
 
-      // Basic validation - check if required fields exist
-      if (!req.body || !req.body.event || !req.body.sale || !req.body.client || !req.body.product) {
-        logger.error('❌ Dados obrigatórios não encontrados');
+      if (!req.body || typeof req.body !== 'object') {
+        logger.error('❌ Dados inválidos: body vazio ou não é objeto');
         res.status(400).json({
           success: false,
-          error: 'Dados obrigatórios não encontrados',
-          required: ['event', 'sale', 'client', 'product']
+          error: 'Dados inválidos',
+          message: 'O corpo da requisição deve ser um objeto JSON válido'
         });
         return;
       }
 
-      const webhookData = req.body;
+      // Extrair dados de forma flexível
+      const webhookData = WebhookController.extractWebhookData(req.body);
 
-      // Check if this is an abandoned cart event
-      if (webhookData.event !== 'checkoutAbandoned') {
+      logger.info('📊 Dados extraídos:', {
+        event: webhookData.event,
+        saleId: webhookData.sale.id,
+        clientEmail: webhookData.client.email,
+        productName: webhookData.product.name
+      });
+
+      // Verificar se é um evento de carrinho abandonado
+      const abandonedEvents = ['checkoutAbandoned', 'cart_abandoned', 'abandoned_cart', 'checkout_abandoned'];
+      if (!abandonedEvents.includes(webhookData.event)) {
         logger.warn('⚠️ Evento não é de carrinho abandonado:', webhookData.event);
         res.status(200).json({
           success: true,
@@ -329,7 +335,7 @@ export class WebhookController {
         return;
       }
 
-      // Check if this sale was already processed
+      // Verificar se esta venda já foi processada
       const existingRecord = await AbandonedCart.findOne({ 'sale.id': webhookData.sale.id });
       
       if (existingRecord) {
@@ -347,7 +353,7 @@ export class WebhookController {
         return;
       }
 
-      // Save to database
+      // Salvar no banco de dados
       const abandonedCart = new AbandonedCart(webhookData);
       await abandonedCart.save();
 
@@ -358,7 +364,7 @@ export class WebhookController {
         amount: webhookData.sale.amount || webhookData.sale.total
       });
 
-      // Return success response
+      // Retornar resposta de sucesso
       res.status(200).json({
         success: true,
         message: 'Webhook GreennCovery processado com sucesso',

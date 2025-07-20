@@ -5,8 +5,8 @@
 echo "🧪 Testando webhook específico do Nathan..."
 echo ""
 
-# URL do webhook (porta 3001)
-WEBHOOK_URL="http://localhost:3001/webhook/nathan"
+# URL do webhook (porta 3010)
+WEBHOOK_URL="http://localhost:3010/webhook/nathan"
 
 # Verificar se o servidor está rodando
 echo "🔍 Verificando se o servidor está rodando..."
@@ -30,20 +30,20 @@ echo "$RESPONSE" | jq '.' 2>/dev/null || echo "$RESPONSE"
 
 echo ""
 echo "🔍 Testando health check..."
-HEALTH_RESPONSE=$(curl -s "http://localhost:3001/webhook/health")
+HEALTH_RESPONSE=$(curl -s "http://localhost:3010/webhook/health")
 echo "Health check: $HEALTH_RESPONSE"
 
 echo ""
 echo "📊 Testando API de estatísticas..."
-STATS_RESPONSE=$(curl -s "http://localhost:3001/api/abandoned-carts/stats/overview")
+STATS_RESPONSE=$(curl -s "http://localhost:3010/api/abandoned-carts/stats/overview")
 echo "Estatísticas: $STATS_RESPONSE" | jq '.' 2>/dev/null || echo "$STATS_RESPONSE"
 
 echo ""
 echo "📋 Testando listagem de carrinhos abandonados..."
-CARTS_RESPONSE=$(curl -s "http://localhost:3001/api/abandoned-carts?limit=5")
+CARTS_RESPONSE=$(curl -s "http://localhost:3010/api/abandoned-carts?limit=5")
 echo "Carrinhos abandonados: $CARTS_RESPONSE" | jq '.' 2>/dev/null || echo "$CARTS_RESPONSE"
 
 echo ""
-echo "🌐 Acesse a documentação Swagger em: http://localhost:3001/api-docs"
+echo "🌐 Acesse a documentação Swagger em: http://localhost:3010/api-docs"
 echo ""
 echo "✅ Teste concluído!" 

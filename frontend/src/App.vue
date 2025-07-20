@@ -20,10 +20,19 @@ watch(
 
 const defineLayout = computed<string>(() => {
   // VIEW HOME
-  if (
-    route.name === "Login"
-  ) {
+  if (route.name === "Login") {
     return "layoutForm";
+  }
+
+  // Rotas autenticadas usam LayoutDashboard
+  if (
+    route.name === "Home" ||
+    route.name === "AbandonedCart" ||
+    route.name === "Q&A" ||
+    route.name === "WhatsAppConfig" ||
+    route.name === "MessageHistory"
+  ) {
+    return "layoutDashboard";
   }
 
   return "main";
@@ -31,7 +40,13 @@ const defineLayout = computed<string>(() => {
 </script>
 
 <template>
-  <Toaster position="top-right" theme="light" richColors :duration="3000" :expand="true" />
+  <Toaster
+    position="top-right"
+    theme="light"
+    richColors
+    :duration="3000"
+    :expand="true"
+  />
   <component :is="defineLayout">
     <router-view />
   </component>
@@ -67,7 +82,7 @@ html {
 
 ::selection {
   color: var(--black);
-  background: var(--yellow);
+  background: var(--input);
 }
 
 [data-anima="top"] {

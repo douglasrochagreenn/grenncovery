@@ -28,116 +28,47 @@
 @layer base {
   :root {
     --background: #ffffff;
-    --foreground: #181818;
-
-    --card: #f8f8f8;
-    --card-foreground: #202020;
-
+    --foreground: #1a1a1a;
+    --card: #ffffff;
+    --card-foreground: #262626;
     --popover: #ffffff;
-    --popover-foreground: #181818;
-
-    --primary: #181818;
+    --popover-foreground: #0b1a0b;
+    --primary: #2c5232;
     --primary-foreground: #ffffff;
-
-    --secondary: #ffffff;
-    --secondary-foreground: #181818;
-
-    --muted: #f1f5f9;
-    --muted-foreground: #181818;
-
-    --accent: #dadada;
-    --accent-foreground: #181818;
-
-    --destructive: #f02424;
-    --destructive-light: #b426261e;
-    --destructive-foreground: #f8fafc;
-
-    --green: #41b983;
-
-    --border: #8c8c8c1a;
-    --ring: rgb(140 140 140 / 0.1);
-    --radius: 0.5rem;
-
-    --white-solid: #f8fafc;
-    --dark-solid: #00000f;
-    --icon: #181818;
-    --icon-foreground: #ffffff;
-    --yellow: #f2bd00;
-
-    /* Text Colors */
-    --text-primary: #181818;
-    --text-primary-foreground: #ffffff;
-
-    /* Input Colors */
-    --input: #181818;
-    --input-foreground: #ffffff;
-
-    /* Button Colors */
-    --button-text: #ffffff;
-    --button-bg: #181818;
-
-    /* NavBar Colors */
-    --background-navbar: #ffffff;
-
-    /* Footer Colors */
-    --text-footer: #575757;
-
-    /* Form fields */
-    --label: #575757;
+    --secondary: #e5e8e5;
+    --secondary-foreground: #000000;
+    --muted: #f6f8f2;
+    --muted-foreground: #666666;
+    --accent: #e9ece3;
+    --accent-foreground: #262626;
+    --destructive: #bf4040;
+    --destructive-foreground: #ffffff;
+    --border: #cdd8cd;
+    --input: #669966;
+    --ring: #2c5232;
+    --radius: 0.3rem;
   }
-
   .dark {
-    --background: #181818;
+    --background: #1a1f1a;
     --foreground: #ffffff;
-
-    --card: #202020;
-    --card-foreground: #f8f8f8;
-
-    --popover: #181818;
-    --popover-foreground: #f8fafc;
-
-    --primary: #ffffff;
-    --primary-foreground: #181818;
-
-    --secondary: #181818;
+    --card: #1a1a1a;
+    --card-foreground: #ffffff;
+    --popover: #0d100d;
+    --popover-foreground: #ffffff;
+    --primary: #2c5232;
+    --primary-foreground: #ffffff;
+    --secondary: #333a33;
     --secondary-foreground: #ffffff;
-
-    --muted: #181818;
-    --muted-foreground: #ffffff;
-
-    --accent: #181818;
-    --accent-foreground: #dadada;
-
-    --destructive: #b42626;
-    --destructive-light: #b426261e;
-    --destructive-foreground: #f8fafc;
-
-    --border: #8c8c8c1a;
-    --ring: rgb(140 140 140 / 0.1);
-    --icon: #ffffff;
-    --icon-foreground: #181818;
-    --yellow: #f2bd00;
-
-    /* Text Colors */
-    --text-primary: #ffffff;
-    --text-primary-foreground: #181818;
-
-    /* Input Colors */
-    --input: #ffffff;
-    --input-foreground: #181818;
-
-    /* Button Colors */
-    --button-text: #ffffff;
-    --button-bg: #181818;
-
-    /* NavBar Colors */
-    --background-navbar: #000000;
-
-    /* Footer Colors */
-    --text-footer: #868686;
-
-    /* Form fields */
-    --label: #868686;
+    --muted: #3f422e;
+    --muted-foreground: #a6a6a6;
+    --accent: #3f422e;
+    --accent-foreground: #f2f2f2;
+    --destructive: #bf4040;
+    --destructive-foreground: #ffffff;
+    --border: #669966;
+    --input: #669966;
+    --ring: #2c5232;
+    --radius: 0.3rem;
   }
 }
 

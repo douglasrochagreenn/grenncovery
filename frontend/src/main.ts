@@ -6,14 +6,12 @@ import PhosphorIcons from "@phosphor-icons/vue";
 import { createHead } from "@vueuse/head";
 import "./assets/index.css";
 
-import layoutHome from "@/layout/LayoutHome.vue";
 import layoutForm from "@/layout/LayoutForm.vue";
 import layoutDashboard from "@/layout/LayoutDashboard.vue";
 
 const app = createApp(App);
 const head = createHead();
 
-app.component("layoutHome", layoutHome);
 app.component("layoutForm", layoutForm);
 app.component("layoutDashboard", layoutDashboard);
 

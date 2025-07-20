@@ -16,7 +16,7 @@ import authRoutes from './routes/auth.routes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3010;
 
 // Configuração do rate limiting
 const limiter = rateLimit({

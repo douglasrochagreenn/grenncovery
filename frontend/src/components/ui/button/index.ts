@@ -7,18 +7,22 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-button-bg text-button-text text-sm font-extrabold ",
+        default: "bg-ring text-popover text-sm font-extrabold ",
         dark: "bg-foreground text-background text-sm font-extrabold ",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "text-sm font-extrabold border border-input bg-background ",
         "outline-white":
           "text-text-primary-foreground text-sm font-extrabold border border-input-foreground bg-foreground",
-        secondary: "bg-secondary text-secondary-foreground font-extrabold hover:bg-secondary/80",
+        secondary:
+          "bg-secondary text-secondary-foreground font-extrabold hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         yellow: "bg-yellow text-primary-foreground text-sm font-bold ",
-        "outline-yellow": "text-yellow text-sm font-bold border border-yellow bg-transparent",
-        "outline-green": "text-[#428318] text-sm font-bold border border-[#428318] bg-transparent",
+        "outline-yellow":
+          "text-yellow text-sm font-bold border border-yellow bg-transparent",
+        "outline-green":
+          "text-[#428318] text-sm font-bold border border-[#428318] bg-transparent",
       },
       size: {
         default: "h-10 px-4 py-2",

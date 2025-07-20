@@ -1,19 +1,26 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useForm } from "vee-validate";
-import { defaultFormsStore } from "@/store";
+import { useAuthStore } from "@/store";
 import { schemaLogin } from "@/utils";
 
 import { Button } from "@/components/ui/button";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
 
-const formsDefaultStore = defaultFormsStore();
-// const authStore = useAuthStore();
+const authStore = useAuthStore();
 
 const router = useRouter();
+
+const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 const showPassword = ref(false);
 const loading = ref(false);
@@ -38,28 +45,45 @@ const { handleSubmit } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true;
-  await formsDefaultStore
-    .login(values)
-    .then(async () => {
+  try {
+    await authStore.login(values);
+    router.push({ name: "Home" });
+  } catch (error) {
+    console.error("Erro no login:", error);
+  } finally {
+    loading.value = false;
+  }
+});
+
+onMounted(async () => {
+  if (isAuthenticated.value) {
+    await authStore.getMe().then(() => {
       router.push({ name: "Home" });
-    })
-    .finally(() => {
-      loading.value = false;
     });
+  }
 });
 </script>
 <template>
   <div class="flex flex-col gap-10">
-    <h1 class="font-extrabold text-[56px] text-foreground leading-none pr-3 pl-3 md:text-[32px] md:leading-8">
+    <h1
+      class="font-extrabold text-[32px] text-foreground leading-none pr-3 pl-3 md:text-[56px] md:leading-8"
+    >
       Acessar minha conta
     </h1>
-    <form class="w-full grid gap-4 overflow-y-scroll pr-3 pl-3" @submit="onSubmit">
+    <form
+      class="w-full grid gap-4 overflow-y-scroll pr-3 pl-3"
+      @submit="onSubmit"
+    >
       <!-- Email -->
       <FormField v-slot="{ componentField }" name="email">
         <FormItem v-auto-animate>
           <FormLabel>Email</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="Digite seu email" v-bind="componentField" />
+            <Input
+              type="text"
+              placeholder="Digite seu email"
+              v-bind="componentField"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -67,11 +91,17 @@ const onSubmit = handleSubmit(async (values) => {
       <!-- Senha -->
       <FormField v-slot="{ componentField }" name="password">
         <FormItem v-auto-animate>
-          <div class="flex w-full items-center text-bold font-medium justify-between">
+          <div
+            class="flex w-full items-center text-bold font-medium justify-between"
+          >
             <FormLabel>Senha</FormLabel>
           </div>
           <FormControl>
-            <Input :type="typePassword" :placeholder="placeholderPassword" v-bind="componentField" />
+            <Input
+              :type="typePassword"
+              :placeholder="placeholderPassword"
+              v-bind="componentField"
+            />
             <PhEye
               v-if="!showPassword"
               :size="20"
@@ -82,7 +112,7 @@ const onSubmit = handleSubmit(async (values) => {
             <PhEyeSlash
               v-else
               :size="20"
-              color="va(--icon)"
+              color="var(--icon)"
               class="cursor-pointer absolute top-[32px] right-3 select-none"
               @click="showPassword = !showPassword"
             />
@@ -90,7 +120,9 @@ const onSubmit = handleSubmit(async (values) => {
           <FormMessage />
         </FormItem>
       </FormField>
-      <Button variant="dark" type="submit" :disabled="loading">Entrar na minha conta</Button>
+      <Button variant="dark" type="submit" :disabled="loading"
+        >Entrar na minha conta</Button
+      >
     </form>
   </div>
 </template>

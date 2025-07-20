@@ -37,11 +37,11 @@ const config = {
       center: true,
       padding: {
         DEFAULT: "2rem",
-        sm: "2rem",
-        md: "2rem",
+        sm: "6rem",
+        md: "5rem",
         lg: "4rem",
-        xl: "5rem",
-        "2xl": "6rem",
+        xl: "2rem",
+        "2xl": "2rem",
       },
     },
     extend: {
@@ -52,24 +52,10 @@ const config = {
         foreground: "var(--foreground)",
         icon: "var(--icon)",
         "icon-foreground": "var(--icon-foreground)",
-        yellow: "var(--yellow)",
         label: "var(--label)",
-
-        "text-primary": "var(--text-primary)",
-        "text-primary-foreground": "var(--text-primary-foreground)",
 
         input: "var(--input)",
         "input-foreground": "var(--input-foreground)",
-
-        "button-text": "var(--button-text)",
-        "button-bg": "var(--button-bg)",
-
-        "background-navbar": "var(--background-navbar)",
-        "text-footer": "var(--text-footer)",
-
-        green: "var(--green)",
-        "white-solid": "var(--white-solid)",
-        "dark-solid": "var(--dark-solid)",
 
         primary: {
           DEFAULT: "var(--primary)",
@@ -152,7 +138,8 @@ const config = {
         pulsePayment: "pulse-payment 1.3s ease-in-out infinite",
       },
       backgroundImage: {
-        "custom-gradient": "linear-gradient(to bottom, #000000 0%, transparent 100%)",
+        "custom-gradient":
+          "linear-gradient(to bottom, #000000 0%, transparent 100%)",
       },
       screens: {},
     },

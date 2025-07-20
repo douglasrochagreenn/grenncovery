@@ -6,7 +6,7 @@ echo "🔐 Testando sistema de autenticação..."
 echo ""
 
 # URL base
-BASE_URL="http://localhost:3001"
+BASE_URL="http://localhost:3010"
 
 # Verificar se o servidor está rodando
 echo "🔍 Verificando se o servidor está rodando..."

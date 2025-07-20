@@ -15,7 +15,7 @@
     "docker:run": "docker run -p 3000:3000 nathan-webhook-api",
     "docker:compose": "docker-compose up -d",
     "docker:compose:down": "docker-compose down",
-    "pm2:start": "pm2 start ecosystem.config.js", 
+    "pm2:start": "pm2 start ecosystem.config.js",
     "pm2:stop": "pm2 stop greenncovery-webhook-api",
     "pm2:restart": "pm2 restart greenncovery-webhook-api",
     "pm2:logs": "pm2 logs greenncovery-webhook-api",

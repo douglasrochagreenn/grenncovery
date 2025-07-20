@@ -44,7 +44,10 @@ app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.de
     customfavIcon: '/favicon.ico',
     swaggerOptions: {
         persistAuthorization: true,
-        displayRequestDuration: true
+        displayRequestDuration: true,
+        docExpansion: 'list',
+        defaultModelsExpandDepth: 1,
+        defaultModelExpandDepth: 1
     }
 }));
 app.get('/health', (req, res) => {

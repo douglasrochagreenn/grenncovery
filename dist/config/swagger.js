@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.swaggerDefinition = void 0;
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const path_1 = __importDefault(require("path"));
 const options = {
     definition: {
         openapi: '3.0.0',
@@ -348,11 +349,17 @@ const options = {
             }
         ]
     },
-    apis: [
-        './src/routes/*.ts',
-        './src/controllers/*.ts',
-        './src/models/*.ts'
-    ]
+    apis: process.env.NODE_ENV === 'production'
+        ? [
+            path_1.default.join(__dirname, '../routes/*.js'),
+            path_1.default.join(__dirname, '../controllers/*.js'),
+            path_1.default.join(__dirname, '../models/*.js')
+        ]
+        : [
+            './src/routes/*.ts',
+            './src/controllers/*.ts',
+            './src/models/*.ts'
+        ]
 };
 exports.swaggerDefinition = (0, swagger_jsdoc_1.default)(options);
 //# sourceMappingURL=swagger.js.map

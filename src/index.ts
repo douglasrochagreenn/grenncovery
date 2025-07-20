@@ -2,12 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 
 import { connectDB } from './config/database';
 import { logger } from './config/logger';
+import { swaggerDefinition } from './config/swagger';
 import webhookRoutes from './routes/webhook.routes';
 import apiRoutes from './routes/api.routes';
 import authRoutes from './routes/auth.routes';
@@ -40,54 +40,13 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Configuração do Swagger
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'GreennCovery Webhook API',
-      version: '1.0.0',
-      description: 'API para receber webhooks de carrinho abandonado do sistema GreennCovery',
-      contact: {
-        name: 'GreennCovery',
-        email: 'contato@greenncovery.com'
-      }
-    },
-    servers: [
-      {
-        url: `http://localhost:${PORT}`,
-        description: 'Servidor de Desenvolvimento'
-      },
-      {
-        url: 'https://api.greenncovery.com',
-        description: 'Servidor de Produção'
-      }
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          description: 'Token JWT obtido através do login (válido por 30 dias)'
-        }
-      }
-    }
-  },
-  apis: process.env.NODE_ENV === 'production' 
-    ? ['./dist/routes/*.js', './dist/controllers/*.js']
-    : ['./src/routes/*.ts', './src/controllers/*.ts']
-};
-
-const specs = swaggerJsdoc(swaggerOptions);
-
 // Rotas
 app.use('/webhook', webhookRoutes);
 app.use('/api', apiRoutes);
 app.use('/auth', authRoutes);
 
 // Documentação Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDefinition, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'GreennCovery API - Documentação',
   customfavIcon: '/favicon.ico',

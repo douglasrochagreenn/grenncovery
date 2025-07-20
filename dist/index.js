@@ -7,11 +7,11 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const database_1 = require("./config/database");
 const logger_1 = require("./config/logger");
+const swagger_1 = require("./config/swagger");
 const webhook_routes_1 = __importDefault(require("./routes/webhook.routes"));
 const api_routes_1 = __importDefault(require("./routes/api.routes"));
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
@@ -34,48 +34,10 @@ app.use((0, cors_1.default)());
 app.use(limiter);
 app.use(express_1.default.json({ limit: '10mb' }));
 app.use(express_1.default.urlencoded({ extended: true }));
-const swaggerOptions = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'GreennCovery Webhook API',
-            version: '1.0.0',
-            description: 'API para receber webhooks de carrinho abandonado do sistema GreennCovery',
-            contact: {
-                name: 'GreennCovery',
-                email: 'contato@greenncovery.com'
-            }
-        },
-        servers: [
-            {
-                url: `http://localhost:${PORT}`,
-                description: 'Servidor de Desenvolvimento'
-            },
-            {
-                url: 'https://api.greenncovery.com',
-                description: 'Servidor de Produção'
-            }
-        ],
-        components: {
-            securitySchemes: {
-                bearerAuth: {
-                    type: 'http',
-                    scheme: 'bearer',
-                    bearerFormat: 'JWT',
-                    description: 'Token JWT obtido através do login (válido por 30 dias)'
-                }
-            }
-        }
-    },
-    apis: process.env.NODE_ENV === 'production'
-        ? ['./dist/routes/*.js', './dist/controllers/*.js']
-        : ['./src/routes/*.ts', './src/controllers/*.ts']
-};
-const specs = (0, swagger_jsdoc_1.default)(swaggerOptions);
 app.use('/webhook', webhook_routes_1.default);
 app.use('/api', api_routes_1.default);
 app.use('/auth', auth_routes_1.default);
-app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(specs, {
+app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerDefinition, {
     customCss: '.swagger-ui .topbar { display: none }',
     customSiteTitle: 'GreennCovery API - Documentação',
     customfavIcon: '/favicon.ico',

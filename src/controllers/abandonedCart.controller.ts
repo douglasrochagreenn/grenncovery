@@ -137,13 +137,18 @@ export class AbandonedCartController {
   static async getStatsOverview(req: Request, res: Response): Promise<void> {
     try {
       // Get basic stats
-      const [totalCarts, totalValue, averageValue] = await Promise.all([
+      const [totalCarts, totalValue, averageValue, recoveredCarts, recoveredValue] = await Promise.all([
         AbandonedCart.countDocuments(),
         AbandonedCart.aggregate([
           { $group: { _id: null, total: { $sum: '$sale.total' } } }
         ]),
         AbandonedCart.aggregate([
           { $group: { _id: null, avg: { $avg: '$sale.total' } } }
+        ]),
+        AbandonedCart.countDocuments({ cart_status: 'recovered' }),
+        AbandonedCart.aggregate([
+          { $match: { cart_status: 'recovered' } },
+          { $group: { _id: null, total: { $sum: '$sale.total' } } }
         ])
       ]);
 
@@ -162,6 +167,9 @@ export class AbandonedCartController {
         AbandonedCart.countDocuments({ createdAt: { $gte: weekAgo } }),
         AbandonedCart.countDocuments({ createdAt: { $gte: monthAgo } })
       ]);
+
+      // Calculate recovery rate
+      const recoveryRate = totalCarts > 0 ? ((recoveredCarts / totalCarts) * 100).toFixed(2) : '0.00';
 
       // Get top products
       const topProducts = await AbandonedCart.aggregate([
@@ -189,6 +197,9 @@ export class AbandonedCartController {
         totalCarts,
         totalValue: totalValue[0]?.total || 0,
         averageValue: averageValue[0]?.avg || 0,
+        recoveredCarts,
+        recoveredValue: recoveredValue[0]?.total || 0,
+        recoveryRate: parseFloat(recoveryRate),
         todayCarts,
         weekCarts,
         monthCarts,

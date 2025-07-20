@@ -106,13 +106,18 @@ class AbandonedCartController {
     }
     static async getStatsOverview(req, res) {
         try {
-            const [totalCarts, totalValue, averageValue] = await Promise.all([
+            const [totalCarts, totalValue, averageValue, recoveredCarts, recoveredValue] = await Promise.all([
                 abandonedCart_model_1.AbandonedCart.countDocuments(),
                 abandonedCart_model_1.AbandonedCart.aggregate([
                     { $group: { _id: null, total: { $sum: '$sale.total' } } }
                 ]),
                 abandonedCart_model_1.AbandonedCart.aggregate([
                     { $group: { _id: null, avg: { $avg: '$sale.total' } } }
+                ]),
+                abandonedCart_model_1.AbandonedCart.countDocuments({ cart_status: 'recovered' }),
+                abandonedCart_model_1.AbandonedCart.aggregate([
+                    { $match: { cart_status: 'recovered' } },
+                    { $group: { _id: null, total: { $sum: '$sale.total' } } }
                 ])
             ]);
             const today = new Date();
@@ -126,6 +131,7 @@ class AbandonedCartController {
                 abandonedCart_model_1.AbandonedCart.countDocuments({ createdAt: { $gte: weekAgo } }),
                 abandonedCart_model_1.AbandonedCart.countDocuments({ createdAt: { $gte: monthAgo } })
             ]);
+            const recoveryRate = totalCarts > 0 ? ((recoveredCarts / totalCarts) * 100).toFixed(2) : '0.00';
             const topProducts = await abandonedCart_model_1.AbandonedCart.aggregate([
                 { $group: {
                         _id: '$product.name',
@@ -148,6 +154,9 @@ class AbandonedCartController {
                 totalCarts,
                 totalValue: totalValue[0]?.total || 0,
                 averageValue: averageValue[0]?.avg || 0,
+                recoveredCarts,
+                recoveredValue: recoveredValue[0]?.total || 0,
+                recoveryRate: parseFloat(recoveryRate),
                 todayCarts,
                 weekCarts,
                 monthCarts,

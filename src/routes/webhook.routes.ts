@@ -318,20 +318,20 @@ const router = Router();
  *               type: string
  *               description: Email do vendedor
  *               example: "larry.batz@hotmail.com"
- *                 cart_status:
- *                   type: string
- *                   enum: [abandoned, recovered, cancelled]
- *                   example: "abandoned"
- *                   description: Status atual do carrinho
- *                 status_updated_at:
- *                   type: string
- *                   format: date-time
- *                   example: "2025-01-20T10:30:00.000Z"
- *                   description: Data da última atualização de status
- *                 status_updated_by:
- *                   type: string
- *                   example: "system"
- *                   description: Usuário que atualizou o status
+ *             cart_status:
+ *               type: string
+ *               enum: [abandoned, recovered, cancelled]
+ *               example: "abandoned"
+ *               description: Status atual do carrinho
+ *             status_updated_at:
+ *               type: string
+ *               format: date-time
+ *               example: "2025-01-20T10:30:00.000Z"
+ *               description: Data da última atualização de status
+ *             status_updated_by:
+ *               type: string
+ *               example: "system"
+ *               description: Usuário que atualizou o status
  *     ErrorResponse:
  *       type: object
  *       properties:

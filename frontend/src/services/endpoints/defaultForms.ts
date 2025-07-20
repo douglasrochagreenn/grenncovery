@@ -1,10 +1,10 @@
 export const routes = {
-  login: () => "user/login",
-  registerPF: () => "user/registerPF",
-  registerPJ: () => "user/registerPJ",
-  recoverPassword: () => "user/forgot-password",
-  createPassword: () => "user/reset-password",
-  validateToken: (token: string) => `user/reset-password/${token}`,
-  sendAccountActivation: () => "user/send-account-activation",
-  validateTokenRegister: (token: string) => `user/activate-account/${token}`,
+  login: () => "auth/login",
+  registerPF: () => "auth/registerPF",
+  registerPJ: () => "auth/registerPJ",
+  recoverPassword: () => "auth/forgot-password",
+  createPassword: () => "auth/reset-password",
+  validateToken: (token: string) => `auth/reset-password/${token}`,
+  sendAccountActivation: () => "auth/send-account-activation",
+  validateTokenRegister: (token: string) => `auth/activate-account/${token}`,
 };

@@ -34,6 +34,7 @@ const limiter = rateLimit({
 // Middleware de segurança
 app.use(helmet());
 app.use(cors());
+app.options('*', cors());
 app.use(limiter);
 
 // Middleware para parsing JSON

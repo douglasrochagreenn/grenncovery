@@ -359,12 +359,13 @@ const router = Router();
  */
 
 /**
+ /**
  * @swagger
  * /webhook/greenncovery:
  *   post:
- *     summary: Recebe webhook específico do Nathan
+ *     summary: Recebe webhook específico do GreennCovery
  *     description: |
- *       Endpoint específico para receber webhooks do sistema Nathan.
+ *       Endpoint específico para receber webhooks do sistema GreennCovery.
  *       
  *       **Funcionalidades:**
  *       - Recebe dados de carrinho abandonado
@@ -377,8 +378,6 @@ const router = Router();
  *       - Informações do cliente (nome, email, telefone, endereço)
  *       - Detalhes da venda (valor, método de pagamento)
  *       - Informações do produto
- *     summary: Recebe webhook específico do GreennCovery
- *     description: Endpoint específico para receber webhooks do sistema GreennCovery
  *     tags: [Webhook GreennCovery]
  *     requestBody:
  *       required: true
@@ -386,127 +385,19 @@ const router = Router();
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/AbandonedCartWebhook'
- *           example:
- *             type: "checkout"
- *             event: "checkoutAbandoned"
- *             oldStatus: "abandoned"
- *             currentStatus: "abandoned"
- *             contract:
- *               id: 760
- *               start_date: "2025-07-19"
- *               created_at: "2025-07-19T19:09:10.312603Z"
- *               updated_at: "2025-07-19T19:09:10.312606Z"
- *               status: "paid"
- *               current_period_end: "2025-07-19T19:09:10.312609Z"
- *             sale:
- *               id: 526
- *               type: "SUBSCRIPTION"
- *               status: "abandoned"
- *               created_at: "2025-07-19T19:09:10.312614Z"
- *               update_at: "2025-07-19T19:09:10.312617Z"
- *               seller_id: 426
- *               installments: 12
- *               method: "CREDIT_CARD"
- *               client_id: 100
- *               amount: 10
- *               proposal_id: null
- *               total: 10
- *             client:
- *               id: 100
- *               name: "Leila O'Connell"
- *               email: "adrian.barton@greenholt.net"
- *               cellphone: "+16098846219"
- *               document: "917.527.272-59"
- *               cpf_cnpj: "917.527.272-59"
- *               zipcode: "14229"
- *               street: "Kyle Flat"
- *               number: "35774"
- *               complement: ""
- *               neighborhood: ""
- *               city: "New Arno"
- *               uf: "WI"
- *               created_at: "2025-07-19T19:09:10.312581Z"
- *               updated_at: "2025-07-19T19:09:10.312588Z"
- *             product:
- *               id: 96502
- *               name: "Dragão assinatura"
- *               description: "Minha assinatura 10reais"
- *               category_id: 2
- *               stock: null
- *               type: "SUBSCRIPTION"
- *               amount: 10
- *               period: 30
- *               thank_you_page: null
- *               created_at: "2025-01-14T19:40:32.000000Z"
- *               updated_at: "2025-01-14T19:40:32.000000Z"
- *               seller_id: 408443
- *               slug: "dragao-assinatura"
- *               method: "CREDIT_CARD,BOLETO,PIX"
- *               product_type_id: 5
- *               status_changed_at: "2025-01-14 19:40:31"
- *               product_id: 96502
- *               hash: "QPzYRe"
- *             oferta: "Dragão assinatura"
- *             offer:
- *               hash: "QPzYRe"
- *               amount: 10
- *               method: "CREDIT_CARD,BOLETO,PIX"
- *               name: "Dragão assinatura"
- *               created_at: "2025-01-14T19:40:32.000000Z"
- *             seller:
- *               id: 426
- *               name: "Ezekiel Hagenes I"
- *               email: "larry.batz@hotmail.com"
- *               cellphone: "+13803331961"
- *             affiliate: null
- *             productMetas: []
- *             proposalMetas: []
  *     responses:
  *       200:
  *         description: Webhook processado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               oneOf:
- *                 - $ref: '#/components/schemas/NathanWebhookResponse'
- *               $ref: '#/components/schemas/GreennCoveryWebhookResponse'
- *             examples:
- *               success:
- *                 summary: Webhook processado com sucesso
- *                 value:
- *                   success: true
- *                   message: "Webhook GreennCovery processado com sucesso"
- *                   data:
- *                     id: "64f8a1b2c3d4e5f6a7b8c9d0"
- *                     saleId: 526
- *                     clientEmail: "adrian.barton@greenholt.net"
- *                     productName: "Dragão assinatura"
- *                     amount: 10
- *                     clientName: "Leila O'Connell"
- *                     clientPhone: "+16098846219"
- *                     productDescription: "Minha assinatura 10reais..."
- *                     sellerName: "Ezekiel Hagenes I"
- *                     sellerEmail: "larry.batz@hotmail.com"
- *               duplicate:
- *                 summary: Venda já processada
- *                 value:
- *                   success: true
- *                   message: "Venda já processada anteriormente"
- *                   data:
- *                     id: "64f8a1b2c3d4e5f6a7b8c9d0"
- *                     saleId: 526
- *                     clientEmail: "adrian.barton@greenholt.net"
- *                     productName: "Dragão assinatura"
+ *               $ref: '#/components/schemas/NathanWebhookResponse'
  *       400:
  *         description: Dados inválidos ou obrigatórios não encontrados
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
- *             example:
- *               success: false
- *               error: "Dados obrigatórios não encontrados"
- *               required: ["event", "sale", "client", "product"]
  *       500:
  *         description: Erro interno do servidor
  *         content:

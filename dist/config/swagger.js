@@ -15,7 +15,7 @@ exports.swaggerDefinition = {
     servers: [
         {
             url: process.env.NODE_ENV === 'production'
-                ? 'https://api.greenncovery.com'
+                ? 'https://greenncovery-api.e8673h.easypanel.host'
                 : `http://localhost:${process.env.PORT || 3000}`,
             description: process.env.NODE_ENV === 'production'
                 ? 'Servidor de Produção'

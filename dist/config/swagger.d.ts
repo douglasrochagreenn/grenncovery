@@ -23,6 +23,240 @@ export declare const swaggerDefinition: {
             };
         };
         schemas: {
+            QuestionAnswer: {
+                type: string;
+                properties: {
+                    _id: {
+                        type: string;
+                        example: string;
+                    };
+                    question: {
+                        type: string;
+                        example: string;
+                    };
+                    answer: {
+                        type: string;
+                        example: string;
+                    };
+                    status: {
+                        type: string;
+                        enum: string[];
+                        example: string;
+                    };
+                    producerId: {
+                        type: string;
+                        example: number;
+                    };
+                    clientId: {
+                        type: string;
+                        example: number;
+                    };
+                    clientName: {
+                        type: string;
+                        example: string;
+                    };
+                    clientEmail: {
+                        type: string;
+                        format: string;
+                        example: string;
+                    };
+                    productId: {
+                        type: string;
+                        example: number;
+                    };
+                    productName: {
+                        type: string;
+                        example: string;
+                    };
+                    priority: {
+                        type: string;
+                        enum: string[];
+                        example: string;
+                    };
+                    category: {
+                        type: string;
+                        example: string;
+                    };
+                    tags: {
+                        type: string;
+                        items: {
+                            type: string;
+                        };
+                        example: string[];
+                    };
+                    isPublic: {
+                        type: string;
+                        example: boolean;
+                    };
+                    createdAt: {
+                        type: string;
+                        format: string;
+                        example: string;
+                    };
+                    updatedAt: {
+                        type: string;
+                        format: string;
+                        example: string;
+                    };
+                    answeredAt: {
+                        type: string;
+                        format: string;
+                        example: string;
+                    };
+                };
+            };
+            CreateQuestionAnswerRequest: {
+                type: string;
+                required: string[];
+                properties: {
+                    question: {
+                        type: string;
+                        minLength: number;
+                        maxLength: number;
+                        example: string;
+                    };
+                    answer: {
+                        type: string;
+                        maxLength: number;
+                        example: string;
+                    };
+                    status: {
+                        type: string;
+                        enum: string[];
+                        example: string;
+                    };
+                    producerId: {
+                        type: string;
+                        example: number;
+                    };
+                    clientId: {
+                        type: string;
+                        example: number;
+                    };
+                    clientName: {
+                        type: string;
+                        maxLength: number;
+                        example: string;
+                    };
+                    clientEmail: {
+                        type: string;
+                        format: string;
+                        example: string;
+                    };
+                    productId: {
+                        type: string;
+                        example: number;
+                    };
+                    productName: {
+                        type: string;
+                        maxLength: number;
+                        example: string;
+                    };
+                    priority: {
+                        type: string;
+                        enum: string[];
+                        example: string;
+                    };
+                    category: {
+                        type: string;
+                        maxLength: number;
+                        example: string;
+                    };
+                    tags: {
+                        type: string;
+                        items: {
+                            type: string;
+                            maxLength: number;
+                        };
+                        example: string[];
+                    };
+                    isPublic: {
+                        type: string;
+                        example: boolean;
+                    };
+                };
+            };
+            UpdateQuestionAnswerRequest: {
+                type: string;
+                properties: {
+                    question: {
+                        type: string;
+                        minLength: number;
+                        maxLength: number;
+                        example: string;
+                    };
+                    answer: {
+                        type: string;
+                        maxLength: number;
+                        example: string;
+                    };
+                    status: {
+                        type: string;
+                        enum: string[];
+                        example: string;
+                    };
+                    producerId: {
+                        type: string;
+                        example: number;
+                    };
+                    clientId: {
+                        type: string;
+                        example: number;
+                    };
+                    clientName: {
+                        type: string;
+                        maxLength: number;
+                        example: string;
+                    };
+                    clientEmail: {
+                        type: string;
+                        format: string;
+                        example: string;
+                    };
+                    productId: {
+                        type: string;
+                        example: number;
+                    };
+                    productName: {
+                        type: string;
+                        maxLength: number;
+                        example: string;
+                    };
+                    priority: {
+                        type: string;
+                        enum: string[];
+                        example: string;
+                    };
+                    category: {
+                        type: string;
+                        maxLength: number;
+                        example: string;
+                    };
+                    tags: {
+                        type: string;
+                        items: {
+                            type: string;
+                            maxLength: number;
+                        };
+                        example: string[];
+                    };
+                    isPublic: {
+                        type: string;
+                        example: boolean;
+                    };
+                };
+            };
+            AnswerQuestionRequest: {
+                type: string;
+                required: string[];
+                properties: {
+                    answer: {
+                        type: string;
+                        maxLength: number;
+                        example: string;
+                    };
+                };
+            };
             ErrorResponse: {
                 type: string;
                 properties: {
@@ -402,6 +636,567 @@ export declare const swaggerDefinition: {
         };
     };
     paths: {
+        '/api/questions-answers': {
+            post: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                requestBody: {
+                    required: boolean;
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: string;
+                            };
+                            example: {
+                                question: string;
+                                clientName: string;
+                                clientEmail: string;
+                                productName: string;
+                                priority: string;
+                                category: string;
+                                tags: string[];
+                                isPublic: boolean;
+                            };
+                        };
+                    };
+                };
+                responses: {
+                    201: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            $ref: string;
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    400: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: string;
+                                };
+                            };
+                        };
+                    };
+                    401: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: string;
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+            get: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                parameters: ({
+                    in: string;
+                    name: string;
+                    schema: {
+                        type: string;
+                        minimum: number;
+                        default: number;
+                        maximum?: undefined;
+                        enum?: undefined;
+                        format?: undefined;
+                    };
+                    description: string;
+                } | {
+                    in: string;
+                    name: string;
+                    schema: {
+                        type: string;
+                        minimum: number;
+                        maximum: number;
+                        default: number;
+                        enum?: undefined;
+                        format?: undefined;
+                    };
+                    description: string;
+                } | {
+                    in: string;
+                    name: string;
+                    schema: {
+                        type: string;
+                        enum: string[];
+                        minimum?: undefined;
+                        default?: undefined;
+                        maximum?: undefined;
+                        format?: undefined;
+                    };
+                    description: string;
+                } | {
+                    in: string;
+                    name: string;
+                    schema: {
+                        type: string;
+                        minimum?: undefined;
+                        default?: undefined;
+                        maximum?: undefined;
+                        enum?: undefined;
+                        format?: undefined;
+                    };
+                    description: string;
+                } | {
+                    in: string;
+                    name: string;
+                    schema: {
+                        type: string;
+                        format: string;
+                        minimum?: undefined;
+                        default?: undefined;
+                        maximum?: undefined;
+                        enum?: undefined;
+                    };
+                    description: string;
+                })[];
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            type: string;
+                                            properties: {
+                                                questionAnswers: {
+                                                    type: string;
+                                                    items: {
+                                                        $ref: string;
+                                                    };
+                                                };
+                                                pagination: {
+                                                    type: string;
+                                                    properties: {
+                                                        page: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        limit: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        total: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        totalPages: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        hasNext: {
+                                                            type: string;
+                                                            example: boolean;
+                                                        };
+                                                        hasPrev: {
+                                                            type: string;
+                                                            example: boolean;
+                                                        };
+                                                    };
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    401: {
+                        description: string;
+                    };
+                };
+            };
+        };
+        '/api/questions-answers/stats': {
+            get: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            type: string;
+                                            properties: {
+                                                total: {
+                                                    type: string;
+                                                    properties: {
+                                                        totalQuestions: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        pendingQuestions: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        answeredQuestions: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        archivedQuestions: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                    };
+                                                };
+                                                byPriority: {
+                                                    type: string;
+                                                    properties: {
+                                                        low: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        medium: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        high: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                    };
+                                                };
+                                                byCategory: {
+                                                    type: string;
+                                                    items: {
+                                                        type: string;
+                                                        properties: {
+                                                            category: {
+                                                                type: string;
+                                                                example: string;
+                                                            };
+                                                            count: {
+                                                                type: string;
+                                                                example: number;
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                                byPeriod: {
+                                                    type: string;
+                                                    properties: {
+                                                        today: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        week: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                        month: {
+                                                            type: string;
+                                                            example: number;
+                                                        };
+                                                    };
+                                                };
+                                                responseRate: {
+                                                    type: string;
+                                                    example: string;
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    401: {
+                        description: string;
+                    };
+                };
+            };
+        };
+        '/api/questions-answers/{id}': {
+            get: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                parameters: {
+                    in: string;
+                    name: string;
+                    required: boolean;
+                    schema: {
+                        type: string;
+                    };
+                    description: string;
+                }[];
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            $ref: string;
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    404: {
+                        description: string;
+                    };
+                    401: {
+                        description: string;
+                    };
+                };
+            };
+            put: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                parameters: {
+                    in: string;
+                    name: string;
+                    required: boolean;
+                    schema: {
+                        type: string;
+                    };
+                    description: string;
+                }[];
+                requestBody: {
+                    required: boolean;
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: string;
+                            };
+                            example: {
+                                answer: string;
+                                status: string;
+                                priority: string;
+                                isPublic: boolean;
+                            };
+                        };
+                    };
+                };
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            $ref: string;
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    400: {
+                        description: string;
+                    };
+                    404: {
+                        description: string;
+                    };
+                    401: {
+                        description: string;
+                    };
+                };
+            };
+            delete: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                parameters: {
+                    in: string;
+                    name: string;
+                    required: boolean;
+                    schema: {
+                        type: string;
+                    };
+                    description: string;
+                }[];
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            type: string;
+                                            properties: {
+                                                id: {
+                                                    type: string;
+                                                    example: string;
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    404: {
+                        description: string;
+                    };
+                    401: {
+                        description: string;
+                    };
+                };
+            };
+        };
+        '/api/questions-answers/{id}/answer': {
+            patch: {
+                summary: string;
+                description: string;
+                tags: string[];
+                security: {
+                    bearerAuth: never[];
+                }[];
+                parameters: {
+                    in: string;
+                    name: string;
+                    required: boolean;
+                    schema: {
+                        type: string;
+                    };
+                    description: string;
+                }[];
+                requestBody: {
+                    required: boolean;
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: string;
+                            };
+                            example: {
+                                answer: string;
+                            };
+                        };
+                    };
+                };
+                responses: {
+                    200: {
+                        description: string;
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: string;
+                                    properties: {
+                                        success: {
+                                            type: string;
+                                            example: boolean;
+                                        };
+                                        message: {
+                                            type: string;
+                                            example: string;
+                                        };
+                                        data: {
+                                            $ref: string;
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    400: {
+                        description: string;
+                    };
+                    404: {
+                        description: string;
+                    };
+                    401: {
+                        description: string;
+                    };
+                };
+            };
+        };
         '/webhook/greenncovery': {
             post: {
                 summary: string;

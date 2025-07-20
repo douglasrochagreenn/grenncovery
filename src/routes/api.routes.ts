@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AbandonedCartController } from '../controllers/abandonedCart.controller';
 import { AuthMiddleware } from '../middleware/auth.middleware';
+import questionAnswerRoutes from './questionAnswer.routes';
 
 const router = Router();
 
@@ -371,10 +372,13 @@ const router = Router();
 // Aplicar middleware de autenticação em todas as rotas da API
 router.use(AuthMiddleware.authenticate);
 
-// Rotas da API (agora protegidas)
+// Rotas da API de carrinhos abandonados (agora protegidas)
 router.get('/abandoned-carts', AbandonedCartController.getAbandonedCarts);
 router.get('/abandoned-carts/:id', AbandonedCartController.getAbandonedCartById);
 router.get('/abandoned-carts/stats/overview', AbandonedCartController.getStatsOverview);
 router.get('/abandoned-carts/stats/daily', AbandonedCartController.getDailyStats);
+
+// Rotas da API de perguntas e respostas (protegidas)
+router.use('/questions-answers', questionAnswerRoutes);
 
 export default router; 

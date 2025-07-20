@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { IJwtPayload } from '../types/auth.types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'nathan-webhook-secret-key-2024-super-secure';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_SECRET: string = process.env.JWT_SECRET || 'nathan-webhook-secret-key-2024-super-secure';
+const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || '7d';
 
 export class JwtService {
   /**
@@ -10,7 +10,7 @@ export class JwtService {
    */
   static generateToken(payload: { userId: string; email: string; role: string }): string {
     return jwt.sign(payload, JWT_SECRET as jwt.Secret, {
-      expiresIn: JWT_EXPIRES_IN
+      expiresIn: JWT_EXPIRES_IN as jwt.SignOptions['expiresIn']
     });
   }
 

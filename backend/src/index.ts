@@ -4,7 +4,6 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
-import path from 'path';
 
 import { connectDB } from './config/database';
 import { logger } from './config/logger';
@@ -12,6 +11,9 @@ import { swaggerDefinition } from './config/swagger';
 import webhookRoutes from './routes/webhook.routes';
 import apiRoutes from './routes/api.routes';
 import authRoutes from './routes/auth.routes';
+import botRoutes from './routes/bot.routes';
+
+logger.info('dioneiiii: ', process.env.OPENAI_API_KEY);
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -46,6 +48,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/webhook', webhookRoutes);
 app.use('/api', apiRoutes);
 app.use('/auth', authRoutes);
+app.use('/bot', botRoutes);
 
 // Documentação Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDefinition, {
